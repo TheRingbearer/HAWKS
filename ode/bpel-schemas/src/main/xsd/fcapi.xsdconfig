@@ -1,0 +1,13 @@
+<xb:config xmlns:xb="http://xml.apache.org/xmlbeans/2004/02/xbean/config"
+           xmlns:fcapi="http://www.apache.org/ode/fcapi/">
+
+  <xb:namespace uri="http://www.apache.org/ode/fcapi/">
+    <xb:package>org.apache.ode.bpel.fcapi</xb:package>
+  </xb:namespace> 
+  
+  <xb:namespace uri="##any">
+    <xb:prefix></xb:prefix>
+    <xb:suffix></xb:suffix>
+  </xb:namespace>
+
+</xb:config>

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://www.apache.org/ode/schemas/modelChange/2011/06" elementFormDefault="qualified" xmlns="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://www.apache.org/ode/schemas/modelChange/2011/06">
+
+    <element name="change" type="tns:tProcessChange"></element>
+    
+    <complexType name="tProcessChange">
+    	<sequence>
+    		<element name="change" type="tns:changeType"
+    			maxOccurs="unbounded" minOccurs="0">
+    		</element>
+    	</sequence>
+    	<attribute name="instanceID" type="long"></attribute>
+    </complexType>
+
+    <complexType name="changeType">
+    	<sequence>
+    		<element name="elementData" type="string"></element>
+    	</sequence>
+    	<attribute name="elementName" type="string"></attribute>
+    	<attribute name="elementXPath" type="string"></attribute>
+    	<attribute name="changeReason" type="tns:reasonType"></attribute>
+    </complexType>
+
+    <simpleType name="reasonType">
+    	<restriction base="string">
+    		<enumeration value="added"></enumeration>
+    		<enumeration value="deleted"></enumeration>
+    		<enumeration value="xpathChanged"></enumeration>
+    	</restriction>
+    </simpleType>
+
+    <complexType name="updateChangeType">
+    	<complexContent>
+    		<extension base="tns:changeType">
+    			<sequence>
+    				<element name="updatedElementData" type="string"></element>
+    			</sequence>
+    			<attribute name="updatedElementName" type="string"></attribute>
+    			<attribute name="updatedElementXPath" type="string"></attribute>
+    		</extension>
+    	</complexContent>
+    </complexType>
+</schema>

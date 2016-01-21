@@ -1,0 +1,44 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>de.ustutt.simtech</groupId>
+  <artifactId>simtech-extensions</artifactId>
+  <version>0.1-SNAPSHOT</version>
+  <packaging>jar</packaging>
+
+  <name>simtech-extensions</name>
+  
+  <parent>
+    <groupId>org.apache.ode.pgf</groupId>
+    <artifactId>ode</artifactId>
+    <version>1.3.5-SNAPSHOT</version>
+  </parent>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.apache.ode.pgf</groupId>
+      <artifactId>ode-bpel-runtime</artifactId>
+    </dependency>
+	<dependency>
+      <groupId>commons-logging</groupId>
+      <artifactId>commons-logging</artifactId>
+    </dependency>
+	<dependency>
+      <groupId>org.apache.ode.pgf</groupId>
+      <artifactId>ode-bpel-api</artifactId>
+    </dependency>
+	<dependency>
+      <groupId>org.apache.ode.pgf</groupId>
+      <artifactId>ode-jacob</artifactId>
+    </dependency>
+	<dependency>
+      <groupId>org.apache.ode.pgf</groupId>
+      <artifactId>ode-bpel-compiler</artifactId>
+    </dependency>
+	<dependency>
+      <groupId>org.apache.ode.pgf</groupId>
+      <artifactId>ode-utils</artifactId>
+    </dependency>
+  </dependencies>
+</project>

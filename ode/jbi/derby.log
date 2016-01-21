@@ -1,0 +1,12 @@
+----------------------------------------------------------------
+2010-06-21 16:52:35.399 GMT:
+ Booting Derby version The Apache Software Foundation - Apache Derby - 10.5.3.0 - (802917): instance a816c00e-0129-5b6c-f933-0000001a3fb8
+on database directory C:\Users\vanto\dev\svn\APACHE_ODE_1.3.4\jbi\target\test\smx\ode\hibdb  
+
+Database Class Loader started - derby.database.classpath=''
+----------------------------------------------------------------
+2010-06-21 16:53:09.475 GMT:
+ Booting Derby version The Apache Software Foundation - Apache Derby - 10.5.3.0 - (802917): instance fbd88bcc-0129-5b6c-f933-0000001a3fb8
+on database directory C:\Users\vanto\dev\svn\APACHE_ODE_1.3.4\jbi\target\test\testdb  
+
+Database Class Loader started - derby.database.classpath=''
