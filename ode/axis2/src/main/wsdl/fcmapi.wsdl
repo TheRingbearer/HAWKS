@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+                  xmlns:ns1="http://org.apache.axis2/xsd"
+                  xmlns:ns="http://www.apache.org/ode/fmapi/"
+				  xmlns:fcapi="http://www.apache.org/ode/fcapi/"
+                  xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl"
+                  xmlns:http="http://schemas.xmlsoap.org/wsdl/http/"
+                  xmlns:ns0="http://www.apache.org/ode/fmapi/"
+                  xmlns:xs="http://www.w3.org/2001/XMLSchema"
+                  xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+                  xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/"
+                  xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/"
+                  targetNamespace="http://www.apache.org/ode/fmapi/">
+   <wsdl:types>
+      <xs:schema xmlns:axis2wrapped="http://www.apache.org/ode/fmapi/"
+                 attributeFormDefault="unqualified"
+                 elementFormDefault="unqualified"
+                 targetNamespace="http://www.apache.org/ode/fmapi/">
+         <xs:import namespace="http://www.apache.org/ode/fcapi/"
+                    schemaLocation="fcapi.xsd"/>
+         <xs:element name="getAvailableFragments">
+            <xs:complexType>
+               <xs:sequence/>
+            </xs:complexType>
+         </xs:element>
+         <xs:element name="getAvailableFragmentsResponse">
+            <xs:complexType>
+               <xs:sequence>
+                  <xs:element form="unqualified" name="string-list" type="fcapi:tStringList"/>
+               </xs:sequence>
+            </xs:complexType>
+         </xs:element>
+		 
+		 <xs:element name="getAvailableStartFragments">
+            <xs:complexType>
+               <xs:sequence/>
+            </xs:complexType>
+         </xs:element>
+         <xs:element name="getAvailableStartFragmentsResponse">
+            <xs:complexType>
+               <xs:sequence>
+                  <xs:element form="unqualified" name="string-list" type="fcapi:tStringList"/>
+               </xs:sequence>
+            </xs:complexType>
+         </xs:element>
+		 
+		 <xs:element name="getAvailableNonStartFragments">
+            <xs:complexType>
+               <xs:sequence/>
+            </xs:complexType>
+         </xs:element>
+         <xs:element name="getAvailableNonStartFragmentsResponse">
+            <xs:complexType>
+               <xs:sequence>
+                  <xs:element form="unqualified" name="string-list" type="fcapi:tStringList"/>
+               </xs:sequence>
+            </xs:complexType>
+         </xs:element>
+		 
+		 <xs:element name="ManagementFault" type="xs:string"/>
+      </xs:schema>
+   </wsdl:types>
+   <wsdl:message name="getAvailableFragmentsRequest">
+      <wsdl:part name="parameters" element="ns:getAvailableFragments"/>
+   </wsdl:message>
+   <wsdl:message name="getAvailableFragmentsResponse">
+      <wsdl:part name="parameters" element="ns:getAvailableFragmentsResponse"/>
+   </wsdl:message>
+
+   <wsdl:message name="getAvailableStartFragmentsRequest">
+      <wsdl:part name="parameters" element="ns:getAvailableStartFragments"/>
+   </wsdl:message>
+   <wsdl:message name="getAvailableStartFragmentsResponse">
+      <wsdl:part name="parameters" element="ns:getAvailableStartFragmentsResponse"/>
+   </wsdl:message>
+   <wsdl:message name="getAvailableNonStartFragmentsRequest">
+      <wsdl:part name="parameters" element="ns:getAvailableNonStartFragments"/>
+   </wsdl:message>
+   <wsdl:message name="getAvailableNonStartFragmentsResponse">
+      <wsdl:part name="parameters" element="ns:getAvailableNonStartFragmentsResponse"/>
+   </wsdl:message>
+
+   <wsdl:message name="managementFault">
+        <wsdl:part name="managementFault" element="ns:ManagementFault"/>
+    </wsdl:message>
+   <wsdl:portType name="FragmentManagementPortType">
+      <wsdl:operation name="getAvailableFragments">
+         <wsdl:input message="ns:getAvailableFragmentsRequest"
+                     wsaw:Action="urn:getAvailableFragments"/>
+         <wsdl:output message="ns:getAvailableFragmentsResponse"
+                      wsaw:Action="urn:getAvailableFragmentsResponse"/>
+		<wsdl:fault name="ManagementFault" message="ns:managementFault"/>
+      </wsdl:operation>
+	  
+	  <wsdl:operation name="getAvailableStartFragments">
+         <wsdl:input message="ns:getAvailableStartFragmentsRequest"
+                     wsaw:Action="urn:getAvailableStartFragments"/>
+         <wsdl:output message="ns:getAvailableStartFragmentsResponse"
+                      wsaw:Action="urn:getAvailableStartFragmentsResponse"/>
+		<wsdl:fault name="ManagementFault" message="ns:managementFault"/>
+      </wsdl:operation>
+	
+	  <wsdl:operation name="getAvailableNonStartFragments">
+         <wsdl:input message="ns:getAvailableNonStartFragmentsRequest"
+                     wsaw:Action="urn:getAvailableNonStartFragments"/>
+         <wsdl:output message="ns:getAvailableNonStartFragmentsResponse"
+                      wsaw:Action="urn:getAvailableNonStartFragmentsResponse"/>
+		<wsdl:fault name="ManagementFault" message="ns:managementFault"/>
+      </wsdl:operation>
+	
+   </wsdl:portType>
+       <wsdl:binding name="FragmentManagementSoap11Binding" type="ns:FragmentManagementPortType">
+        <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document"/>
+
+        <wsdl:operation name="getAvailableFragments">
+            <soap:operation soapAction="urn:getAvailableFragments" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+			<wsdl:fault name="ManagementFault">
+                <soap:fault name="ManagementFault" use="literal"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="getAvailableStartFragments">
+            <soap:operation soapAction="urn:getAvailableStartFragments" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+			<wsdl:fault name="ManagementFault">
+                <soap:fault name="ManagementFault" use="literal"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="getAvailableNonStartFragments">
+            <soap:operation soapAction="urn:getAvailableNonStartFragments" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+			<wsdl:fault name="ManagementFault">
+                <soap:fault name="ManagementFault" use="literal"/>
+            </wsdl:fault>
+        </wsdl:operation>		
+		
+		
+    </wsdl:binding>
+   <wsdl:service name="FragmentManagement">
+        <wsdl:port name="FragmentManagementHttpSoap11Endpoint" binding="ns:FragmentManagementSoap11Binding">
+            <soap:address location="http://localhost:8080/ode/processes/FragmentManagement"/>
+		</wsdl:port>
+   </wsdl:service>
+</wsdl:definitions>

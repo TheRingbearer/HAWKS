@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+     Licensed to the Apache Software Foundation (ASF) under one or more
+     contributor license agreements.  See the NOTICE file distributed with
+     this work for additional information regarding copyright ownership.
+     The ASF licenses this file to You under the Apache License, Version 2.0
+     (the "License"); you may not use this file except in compliance with
+     the License.  You may obtain a copy of the License at
+
+     http///www.apache.org/licenses/LICENSE-2.0
+
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License.
+  -->
+<features>
+    <feature name="ode-pgf-core-deps" version="${ode.version}">
+        <feature>transaction</feature>
+        <bundle>mvn:commons-collections/commons-collections/${commons.collections.version}</bundle>
+        <bundle>mvn:commons-beanutils/commons-beanutils/1.8.2</bundle>
+        <bundle>mvn:commons-io/commons-io/1.4</bundle>
+        <bundle>wrap:mvn:jaxen/jaxen/1.1.1</bundle>
+        <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.saxon/9.1.0.8_1</bundle>
+        <bundle>mvn:org.apache.geronimo.components/geronimo-connector/2.1.3</bundle>
+    </feature>
+    <feature name="ode-pgf-core" version="${ode.version}">
+        <bundle>mvn:org.apache.ode.pgf/ode-jbi-bundle/${ode.version}</bundle>
+    </feature>
+    <feature name="ode-pgf-hib-deps" version="${ode.version}">
+        <bundle>wrap:mvn:dom4j/dom4j/1.6.1</bundle>
+        <bundle>wrap:mvn:org.hibernate/hibernate/3.2.5.ga</bundle>
+    </feature>
+    <feature name="ode-pgf-jpa-deps" version="${ode.version}">
+        <bundle>mvn:org.apache.servicemix.specs/org.apache.servicemix.specs.java-persistence-api-1.1.1/1.4.0</bundle>
+        <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.serp/1.13.1_2</bundle>
+        <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.openjpa/1.2.1_2</bundle>
+    </feature>
+    <feature name="ode-pgf-derby-deps" version="${ode.version}">
+        <bundle>wrap:mvn:org.tranql/tranql-connector/1.4</bundle>
+        <bundle>mvn:org.apache.derby/derby/${derby.version}</bundle>
+    </feature>
+    <feature name="ode-pgf-sqlserver-deps" version="${ode.version}">
+        <bundle>wrap:mvn:com.microsoft.sqlserver/sqljdbc/1.2</bundle>
+        <bundle>wrap:mvn:org.tranql/tranql-connector/1.4</bundle>
+        <bundle>wrap:mvn:org.tranql/tranql-connector-sqlserver2005-common/1.1</bundle>
+    </feature>
+    <feature name="ode-pgf-oracle-deps" version="${ode.version}">
+        <bundle>wrap:mvn:oracle/ojdbc5/11.1.0.6.0</bundle>
+        <bundle>wrap:mvn:org.tranql/tranql-connector/1.4</bundle>
+        <bundle>wrap:mvn:org.tranql/tranql-connector-oracle-common/1.4</bundle>
+    </feature>
+    <feature name="ode-pgf" version="${ode.version}">
+        <feature version="${ode.version}">ode-pgf-derby-deps</feature>
+        <feature version="${ode.version}">ode-pgf-jpa-deps</feature>
+        <feature version="${ode.version}">ode-pgf-core-deps</feature>
+        <feature version="${ode.version}">ode-pgf-core</feature>
+    </feature>
+    <feature name="ode-pgf-hib-oracle" version="${ode.version}">
+        <feature version="${ode.version}">ode-pgf-oracle-deps</feature>
+        <feature version="${ode.version}">ode-pgf-hib-deps</feature>
+        <feature version="${ode.version}">ode-pgf-core-deps</feature>
+        <feature version="${ode.version}">ode-pgf-core</feature>
+    </feature>
+    <feature name="ode-pgf-hib-sqlserver" version="${ode.version}">
+        <feature version="${ode.version}">ode-pgf-sqlserver-deps</feature>
+        <feature version="${ode.version}">ode-pgf-hib-deps</feature>
+        <feature version="${ode.version}">ode-pgf-core-deps</feature>
+        <feature version="${ode.version}">ode-pgf-core</feature>
+    </feature>
+    <feature name="ode-pgf-commands" version="${ode.version}">
+        <bundle>mvn:org.apache.ode.pgf/ode-jbi-karaf-commands/${ode.version}</bundle>
+    </feature>
+    <feature name="ode-pgf-pmapi-httpbinding" version="${ode.version}">
+        <bundle>mvn:org.apache.ode.pgf/ode-jbi-karaf-pmapi-httpbinding/${ode.version}</bundle>
+    </feature>
+    <feature name="examples-ode-pgf-ping-pong" version="${ode.version}">
+        <feature version="${ode.version}">ode-pgf</feature>
+        <bundle>mvn:org.apache.ode.pgf.examples/ping-pong-bundle/${ode.version}</bundle>
+    </feature>
+    <feature name="examples-ode-pgf-helloworld" version="${ode.version}">
+        <feature version="${ode.version}">ode-pgf</feature>
+        <bundle>mvn:org.apache.ode.pgf.examples/helloworld-bundle/${ode.version}</bundle>
+    </feature>
+
+</features>

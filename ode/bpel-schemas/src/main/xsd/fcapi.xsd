@@ -1,0 +1,75 @@
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:fcapi="http://www.apache.org/ode/fcapi/"
+        xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.apache.org/ode/fcapi/"
+        elementFormDefault="qualified">
+	
+	<element name="activity-info" type="fcapi:tActivityInfo" id="activity-info"/>
+	<element name="variable-info" type="fcapi:tVariableInfo" id="variable-info"/>
+	<element name="mapping-info" type="fcapi:tMappingInfo" id="mapping-info"/>
+	
+    <element name="string-list" type="fcapi:tStringList"/>
+	<element name="variable-info-list" type="fcapi:tVariableInfoList"/>
+	<element name="activity-list" type="fcapi:tActivityInfoList"/>
+	<element name="mapping-list" type="fcapi:tMappingInfoList"/>
+	
+	<complexType name="tVariableInfo">
+        <sequence>
+            <element name="name" type="xs:string"/>
+			<element name="type" type="xs:QName"/>
+        </sequence>
+    </complexType>
+	
+	<complexType name="tActivityInfo">
+        <sequence>
+            <element name="name" type="xs:string"/>
+			<element name="id" type="xs:int"/>
+        </sequence>
+    </complexType>
+	
+	<complexType name="tMappingInfo">
+		<xs:sequence>
+			<xs:element name="elementType">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="variable"/>
+						<xs:enumeration value="partnerlink"/>
+						<xs:enumeration value="correlationset"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="fromElementName" type="xs:string"/>
+			<xs:element name="toElementName" type="xs:string"/>
+		</xs:sequence>
+    </complexType>	
+	
+	<complexType name="tMappingInfoList">
+        <sequence>
+            <element ref="fcapi:mapping-info" minOccurs="0" maxOccurs="unbounded"/>
+        </sequence>
+    </complexType>
+	
+	<complexType name="tVariableInfoList">
+        <sequence>
+            <element ref="fcapi:variable-info" minOccurs="0" maxOccurs="unbounded"/>
+        </sequence>
+    </complexType>
+	
+	
+	<complexType name="tStringList">
+        <sequence>
+            <element name="element" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+        </sequence>
+    </complexType>
+	
+	<complexType name="tActivityInfoList">
+        <sequence>
+            <element ref="fcapi:activity-info" minOccurs="0" maxOccurs="unbounded"/>
+        </sequence>
+    </complexType>	
+	
+	
+
+	
+	
+	
+	
+</schema>

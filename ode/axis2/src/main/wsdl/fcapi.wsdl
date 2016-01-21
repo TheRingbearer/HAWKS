@@ -1,0 +1,1076 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:ns1="http://org.apache.axis2/xsd" xmlns:ns="http://www.apache.org/ode/fcapi/" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" targetNamespace="http://www.apache.org/ode/fcapi/"
+xmlns:xmime="http://www.w3.org/2005/05/xmlmime">
+    <wsdl:types>
+        <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://www.apache.org/ode/fcapi/">
+		<xs:import namespace="http://www.apache.org/ode/fcapi/" schemaLocation="fcapi.xsd"/>
+		<xs:import namespace="http://www.w3.org/2005/05/xmlmime" schemaLocation="xmlmime.xsd" />
+
+			<xs:element name="FragmentCompositionException" type="xs:string"/>
+			<xs:element name="InstanceNotFoundException" type="xs:string"/>
+
+			
+			<xs:element name="image">
+				<xs:complexType>
+					<xs:all>
+						<xs:element name="base64" type="xmime:base64Binary"
+							xmime:expectedContentType="image/png" />
+					</xs:all>
+				</xs:complexType>
+			</xs:element>	 
+
+			<xs:complexType name="mapping-list-wrapper">
+				<xs:sequence>
+					<xs:element name="mapping-list" type="ns:tMappingInfoList"/>
+				</xs:sequence>
+			</xs:complexType>
+  
+			
+            <xs:element name="wireAndMap">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="instanceId" type="xs:long"/>
+                        <xs:element name="fragmentExitId" type="xs:int"/>
+                        <xs:element name="fragmentEntryId" type="xs:int"/>
+                        <xs:element name="variableMapping" type="ns:mapping-list-wrapper"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="wireAndMapResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="return" type="xs:boolean"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="glue">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="instanceId" type="xs:long"/>
+                        <xs:element name="fragmentContainerId" type="xs:int"/>
+                        <xs:element name="newFragmentName" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="glueResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="return" type="xs:boolean"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+			
+			<xs:element name="ignoreFragmentExitResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="return" type="xs:boolean"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+			
+			<xs:element name="ignoreFragmentEntryResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="return" type="xs:boolean"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>			
+			
+            <xs:element name="getFragmentContainers">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="instanceId" type="xs:long"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+
+			<xs:element name="getDanglingExits">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="instanceId" type="xs:long"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+			
+            <xs:element name="getIgnorableExits">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="instanceId" type="xs:long"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+			
+			<xs:element name="getIgnorableEntries">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="instanceId" type="xs:long"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+			
+            <xs:element name="getDanglingEntries">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="instanceId" type="xs:long"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+
+			
+			<xs:element name="getProcessImage">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="instanceId" type="xs:long"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+
+            <xs:element name="getAvailableCorrelationSets">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="instanceId" type="xs:long"/>
+                        <xs:element name="elementId" type="xs:int"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>			
+			
+			<xs:element name="getAvailablePartnerLinks">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="instanceId" type="xs:long"/>
+                        <xs:element name="elementId" type="xs:int"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+			
+            <xs:element name="getAvailableVariables">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="instanceId" type="xs:long"/>
+                        <xs:element name="entryOrExitId" type="xs:int"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+			
+			<xs:element name="stringListResponse">
+				<xs:complexType>
+				   <xs:sequence>
+					  <xs:element form="unqualified" name="string-list" type="ns:tStringList"/>
+				   </xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="variableListResponse">
+				<xs:complexType>
+				   <xs:sequence>
+					  <xs:element form="unqualified" name="string-list" type="ns:tVariableInfoList"/>
+				   </xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			
+			<xs:element name="activityListResponse">
+				<xs:complexType>
+				   <xs:sequence>
+					  <xs:element form="unqualified" name="activity-list" type="ns:tActivityInfoList"/>
+				   </xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			
+			
+			<xs:complexType name="toMap">
+				<xs:sequence>
+					<xs:element name="instanceId" type="xs:long"/>
+					<xs:element name="elementId" type="xs:int"/>
+				</xs:sequence>
+			</xs:complexType>			
+			
+			<xs:element name="getVariablesToMap" type="ns:toMap"/>
+			<xs:element name="getPartnerLinksToMap" type="ns:toMap"/>
+            <xs:element name="getCorrelationSetsToMap" type="ns:toMap"/>
+			
+			
+			<xs:element name="ignoreFragmentExit">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="instanceId" type="xs:long"/>
+						<xs:element name="fragmentExitId" type="xs:int"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+			
+			
+			<xs:element name="ignoreFragmentEntry">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="instanceId" type="xs:long"/>
+						<xs:element name="fragmentEntryId" type="xs:int"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+			
+			
+        </xs:schema>
+    </wsdl:types>
+    <wsdl:message name="wireAndMapRequest">
+        <wsdl:part name="parameters" element="ns:wireAndMap"/>
+    </wsdl:message>
+    <wsdl:message name="wireAndMapResponse">
+        <wsdl:part name="parameters" element="ns:wireAndMapResponse"/>
+    </wsdl:message>
+    <wsdl:message name="FragmentCompositionException">
+        <wsdl:part name="parameters" element="ns:FragmentCompositionException"/>
+    </wsdl:message>
+    <wsdl:message name="InstanceNotFoundException">
+        <wsdl:part name="parameters" element="ns:InstanceNotFoundException"/>
+    </wsdl:message>
+    <wsdl:message name="getDanglingExitsRequest">
+        <wsdl:part name="parameters" element="ns:getDanglingExits"/>
+    </wsdl:message>
+    <wsdl:message name="getDanglingExitsResponse">
+        <wsdl:part name="parameters" element="ns:activityListResponse"/>
+    </wsdl:message>
+	
+    <wsdl:message name="getIgnorableExitsRequest">
+        <wsdl:part name="parameters" element="ns:getIgnorableExits"/>
+    </wsdl:message>
+    <wsdl:message name="getIgnorableExitsResponse">
+        <wsdl:part name="parameters" element="ns:activityListResponse"/>
+    </wsdl:message>	
+    <wsdl:message name="getIgnorableEntriesRequest">
+        <wsdl:part name="parameters" element="ns:getIgnorableEntries"/>
+    </wsdl:message>
+    <wsdl:message name="getIgnorableEntriesResponse">
+        <wsdl:part name="parameters" element="ns:activityListResponse"/>
+    </wsdl:message>		
+	
+	
+    <wsdl:message name="getAvailablePartnerLinksRequest">
+        <wsdl:part name="parameters" element="ns:getAvailablePartnerLinks"/>
+    </wsdl:message>	
+    <wsdl:message name="getAvailableCorrelationSetsRequest">
+        <wsdl:part name="parameters" element="ns:getAvailableCorrelationSets"/>
+    </wsdl:message>
+	
+    <wsdl:message name="getAvailableVariablesRequest">
+        <wsdl:part name="parameters" element="ns:getAvailableVariables"/>
+    </wsdl:message>
+	<wsdl:message name="getAvailableCorrelationSetsResponse">
+        <wsdl:part name="parameters" element="ns:stringListResponse"/>
+    </wsdl:message>
+	
+	<wsdl:message name="getAvailablePartnerLinksResponse">
+        <wsdl:part name="parameters" element="ns:stringListResponse"/>
+    </wsdl:message>
+	
+	
+    <wsdl:message name="getAvailableVariablesResponse">
+        <wsdl:part name="parameters" element="ns:variableListResponse"/>
+    </wsdl:message>
+
+    <wsdl:message name="getFragmentContainersRequest">
+        <wsdl:part name="parameters" element="ns:getFragmentContainers"/>
+    </wsdl:message>
+    <wsdl:message name="getFragmentContainersResponse">
+        <wsdl:part name="parameters" element="ns:activityListResponse"/>
+    </wsdl:message>
+    <wsdl:message name="getDanglingEntriesRequest">
+        <wsdl:part name="parameters" element="ns:getDanglingEntries"/>
+    </wsdl:message>
+    <wsdl:message name="getDanglingEntriesResponse">
+        <wsdl:part name="parameters" element="ns:activityListResponse"/>
+    </wsdl:message>
+    <wsdl:message name="glueRequest">
+        <wsdl:part name="parameters" element="ns:glue"/>
+    </wsdl:message>
+    <wsdl:message name="glueResponse">
+        <wsdl:part name="parameters" element="ns:glueResponse"/>
+    </wsdl:message>
+	
+	
+    <wsdl:message name="getPartnerLinksToMapRequest">
+        <wsdl:part name="parameters" element="ns:getPartnerLinksToMap"/>
+    </wsdl:message>
+    <wsdl:message name="getPartnerLinksToMapResponse">
+        <wsdl:part name="parameters" element="ns:stringListResponse"/>
+    </wsdl:message>
+    <wsdl:message name="getCorrelationSetsToMapRequest">
+        <wsdl:part name="parameters" element="ns:getCorrelationSetsToMap"/>
+    </wsdl:message>
+    <wsdl:message name="getCorrelationSetsToMapResponse">
+        <wsdl:part name="parameters" element="ns:stringListResponse"/>
+    </wsdl:message>	
+	
+    <wsdl:message name="getVariablesToMapRequest">
+        <wsdl:part name="parameters" element="ns:getVariablesToMap"/>
+    </wsdl:message>
+    <wsdl:message name="getVariablesToMapResponse">
+        <wsdl:part name="parameters" element="ns:variableListResponse"/>
+    </wsdl:message>
+	
+	
+    <wsdl:message name="getProcessImageRequest">
+        <wsdl:part name="parameters" element="ns:getProcessImage"/>
+    </wsdl:message>
+    <wsdl:message name="getProcessImageResponse">
+        <wsdl:part name="parameters" element="ns:image"/>
+    </wsdl:message>
+	
+	
+	<wsdl:message name="ignoreFragmentExitRequest">
+        <wsdl:part name="parameters" element="ns:ignoreFragmentExit"/>
+    </wsdl:message>
+    <wsdl:message name="ignoreFragmentExitResponse">
+        <wsdl:part name="parameters" element="ns:ignoreFragmentExitResponse"/>
+    </wsdl:message>
+
+	<wsdl:message name="ignoreFragmentEntryRequest">
+        <wsdl:part name="parameters" element="ns:ignoreFragmentEntry"/>
+    </wsdl:message>
+    <wsdl:message name="ignoreFragmentEntryResponse">
+        <wsdl:part name="parameters" element="ns:ignoreFragmentEntryResponse"/>
+    </wsdl:message>
+	
+    <wsdl:portType name="FragmentCompositionPortType">
+        <wsdl:operation name="wireAndMap">
+            <wsdl:input message="ns:wireAndMapRequest" wsaw:Action="urn:wireAndMap"/>
+            <wsdl:output message="ns:wireAndMapResponse" wsaw:Action="urn:wireAndMapResponse"/>
+            <wsdl:fault message="ns:FragmentCompositionException" name="FragmentCompositionException" wsaw:Action="urn:wireAndMapFragmentCompositionException"/>
+            <wsdl:fault message="ns:InstanceNotFoundException" name="InstanceNotFoundException" wsaw:Action="urn:wireAndMapInstanceNotFoundException"/>
+        </wsdl:operation>
+        <wsdl:operation name="getDanglingExits">
+            <wsdl:input message="ns:getDanglingExitsRequest" wsaw:Action="urn:getDanglingExits"/>
+            <wsdl:output message="ns:getDanglingExitsResponse" wsaw:Action="urn:getDanglingExitsResponse"/>
+            <wsdl:fault message="ns:InstanceNotFoundException" name="InstanceNotFoundException" wsaw:Action="urn:getDanglingExitsInstanceNotFoundException"/>
+        </wsdl:operation>
+        <!-- getVarsToMap -->
+		<wsdl:operation name="getVariablesToMap">
+            <wsdl:input message="ns:getVariablesToMapRequest" wsaw:Action="urn:getVariablesToMap"/>
+            <wsdl:output message="ns:getVariablesToMapResponse" wsaw:Action="urn:getVariablesToMapResponse"/>
+            <wsdl:fault message="ns:InstanceNotFoundException" name="InstanceNotFoundException" wsaw:Action="urn:getVariablesToMapInstanceNotFoundException"/>
+        </wsdl:operation>
+		
+		<wsdl:operation name="getPartnerLinksToMap">
+            <wsdl:input message="ns:getPartnerLinksToMapRequest" wsaw:Action="urn:getPartnerLinksToMap"/>
+            <wsdl:output message="ns:getPartnerLinksToMapResponse" wsaw:Action="urn:getPartnerLinksToMapResponse"/>
+            <wsdl:fault message="ns:InstanceNotFoundException" name="InstanceNotFoundException" wsaw:Action="urn:getPartnerLinksToMapInstanceNotFoundException"/>
+        </wsdl:operation>
+		
+		<wsdl:operation name="getCorrelationSetsToMap">
+            <wsdl:input message="ns:getCorrelationSetsToMapRequest" wsaw:Action="urn:getCorrelationSetsToMap"/>
+            <wsdl:output message="ns:getCorrelationSetsToMapResponse" wsaw:Action="urn:getCorrelationSetsToMapResponse"/>
+            <wsdl:fault message="ns:InstanceNotFoundException" name="InstanceNotFoundException" wsaw:Action="urn:getCorrelationSetsToMapInstanceNotFoundException"/>
+        </wsdl:operation>
+		
+		
+		<wsdl:operation name="getProcessImage">
+            <wsdl:input message="ns:getProcessImageRequest" wsaw:Action="urn:getProcessImage"/>
+            <wsdl:output message="ns:getProcessImageResponse" wsaw:Action="urn:getProcessImageResponse"/>
+            <wsdl:fault message="ns:InstanceNotFoundException" name="InstanceNotFoundException" wsaw:Action="urn:getProcessImageInstanceNotFoundException"/>
+        </wsdl:operation>
+		
+		
+        <wsdl:operation name="getIgnorableExits">
+            <wsdl:input message="ns:getIgnorableExitsRequest" wsaw:Action="urn:getIgnorableExits"/>
+            <wsdl:output message="ns:getIgnorableExitsResponse" wsaw:Action="urn:getIgnorableExitsResponse"/>
+            <wsdl:fault message="ns:InstanceNotFoundException" name="InstanceNotFoundException" wsaw:Action="urn:getIgnorableExitsInstanceNotFoundException"/>
+        </wsdl:operation>		
+        <wsdl:operation name="getIgnorableEntries">
+            <wsdl:input message="ns:getIgnorableEntriesRequest" wsaw:Action="urn:getIgnorableEntries"/>
+            <wsdl:output message="ns:getIgnorableEntriesResponse" wsaw:Action="urn:getIgnorableEntriesResponse"/>
+            <wsdl:fault message="ns:InstanceNotFoundException" name="InstanceNotFoundException" wsaw:Action="urn:getIgnorableEntriesInstanceNotFoundException"/>
+        </wsdl:operation>			
+		
+		
+		
+		<wsdl:operation name="getAvailablePartnerLinks">
+            <wsdl:input message="ns:getAvailablePartnerLinksRequest" wsaw:Action="urn:getAvailablePartnerLinks"/>
+            <wsdl:output message="ns:getAvailablePartnerLinksResponse" wsaw:Action="urn:getAvailablePartnerLinksResponse"/>
+            <wsdl:fault message="ns:FragmentCompositionException" name="FragmentCompositionException" wsaw:Action="urn:getAvailablePartnerLinksFragmentCompositionException"/>
+            <wsdl:fault message="ns:InstanceNotFoundException" name="InstanceNotFoundException" wsaw:Action="urn:getAvailablePartnerLinksInstanceNotFoundException"/>
+        </wsdl:operation>
+		
+		<wsdl:operation name="getAvailableCorrelationSets">
+            <wsdl:input message="ns:getAvailableCorrelationSetsRequest" wsaw:Action="urn:getAvailableCorrelationSets"/>
+            <wsdl:output message="ns:getAvailableCorrelationSetsResponse" wsaw:Action="urn:getAvailableCorrelationSetsResponse"/>
+            <wsdl:fault message="ns:FragmentCompositionException" name="FragmentCompositionException" wsaw:Action="urn:getAvailableCorrelationSetsFragmentCompositionException"/>
+            <wsdl:fault message="ns:InstanceNotFoundException" name="InstanceNotFoundException" wsaw:Action="urn:getAvailableCorrelationSetsInstanceNotFoundException"/>
+        </wsdl:operation>
+
+
+		<wsdl:operation name="getAvailableVariables">
+            <wsdl:input message="ns:getAvailableVariablesRequest" wsaw:Action="urn:getAvailableVariables"/>
+            <wsdl:output message="ns:getAvailableVariablesResponse" wsaw:Action="urn:getAvailableVariablesResponse"/>
+            <wsdl:fault message="ns:FragmentCompositionException" name="FragmentCompositionException" wsaw:Action="urn:getAvailableVariablesFragmentCompositionException"/>
+            <wsdl:fault message="ns:InstanceNotFoundException" name="InstanceNotFoundException" wsaw:Action="urn:getAvailableVariablesInstanceNotFoundException"/>
+        </wsdl:operation>
+
+        <wsdl:operation name="getFragmentContainers">
+            <wsdl:input message="ns:getFragmentContainersRequest" wsaw:Action="urn:getFragmentContainers"/>
+            <wsdl:output message="ns:getFragmentContainersResponse" wsaw:Action="urn:getFragmentContainersResponse"/>
+            <wsdl:fault message="ns:InstanceNotFoundException" name="InstanceNotFoundException" wsaw:Action="urn:getFragmentContainersInstanceNotFoundException"/>
+        </wsdl:operation>
+        <wsdl:operation name="getDanglingEntries">
+            <wsdl:input message="ns:getDanglingEntriesRequest" wsaw:Action="urn:getDanglingEntries"/>
+            <wsdl:output message="ns:getDanglingEntriesResponse" wsaw:Action="urn:getDanglingEntriesResponse"/>
+            <wsdl:fault message="ns:InstanceNotFoundException" name="InstanceNotFoundException" wsaw:Action="urn:getDanglingEntriesInstanceNotFoundException"/>
+        </wsdl:operation>
+        <wsdl:operation name="glue">
+            <wsdl:input message="ns:glueRequest" wsaw:Action="urn:glue"/>
+            <wsdl:output message="ns:glueResponse" wsaw:Action="urn:glueResponse"/>
+            <wsdl:fault message="ns:FragmentCompositionException" name="FragmentCompositionException" wsaw:Action="urn:glueFragmentCompositionException"/>
+            <wsdl:fault message="ns:InstanceNotFoundException" name="InstanceNotFoundException" wsaw:Action="urn:glueInstanceNotFoundException"/>
+        </wsdl:operation>
+		<!-- ignore exit -->
+        <wsdl:operation name="ignoreFragmentExit">
+            <wsdl:input message="ns:ignoreFragmentExitRequest" wsaw:Action="urn:ignoreFragmentExit"/>
+            <wsdl:output message="ns:ignoreFragmentExitResponse" wsaw:Action="urn:ignoreFragmentExitResponse"/>
+            <wsdl:fault message="ns:FragmentCompositionException" name="FragmentCompositionException" wsaw:Action="urn:ignoreFragmentExitFragmentCompositionException"/>
+            <wsdl:fault message="ns:InstanceNotFoundException" name="InstanceNotFoundException" wsaw:Action="urn:ignoreFragmentExitInstanceNotFoundException"/>
+        </wsdl:operation>
+        <wsdl:operation name="ignoreFragmentEntry">
+            <wsdl:input message="ns:ignoreFragmentEntryRequest" wsaw:Action="urn:ignoreFragmentEntry"/>
+            <wsdl:output message="ns:ignoreFragmentEntryResponse" wsaw:Action="urn:ignoreFragmentEntryResponse"/>
+            <wsdl:fault message="ns:FragmentCompositionException" name="FragmentCompositionException" wsaw:Action="urn:ignoreFragmentEntryFragmentCompositionException"/>
+            <wsdl:fault message="ns:InstanceNotFoundException" name="InstanceNotFoundException" wsaw:Action="urn:ignoreFragmentEntryInstanceNotFoundException"/>
+        </wsdl:operation>
+
+	</wsdl:portType>
+    <wsdl:binding name="FragmentCompositionSoap11Binding" type="ns:FragmentCompositionPortType">
+        <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document"/>
+        <wsdl:operation name="wireAndMap">
+            <soap:operation soapAction="urn:wireAndMap" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="InstanceNotFoundException">
+                <soap:fault use="literal" name="InstanceNotFoundException"/>
+            </wsdl:fault>
+            <wsdl:fault name="FragmentCompositionException">
+                <soap:fault use="literal" name="FragmentCompositionException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+		<wsdl:operation name="ignoreFragmentExit">
+            <soap:operation soapAction="urn:ignoreFragmentExit" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="InstanceNotFoundException">
+                <soap:fault use="literal" name="InstanceNotFoundException"/>
+            </wsdl:fault>
+            <wsdl:fault name="FragmentCompositionException">
+                <soap:fault use="literal" name="FragmentCompositionException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+		
+		<wsdl:operation name="ignoreFragmentEntry">
+            <soap:operation soapAction="urn:ignoreFragmentEntry" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="InstanceNotFoundException">
+                <soap:fault use="literal" name="InstanceNotFoundException"/>
+            </wsdl:fault>
+            <wsdl:fault name="FragmentCompositionException">
+                <soap:fault use="literal" name="FragmentCompositionException"/>
+            </wsdl:fault>
+        </wsdl:operation>		
+		
+		
+		
+		
+		
+		<wsdl:operation name="getProcessImage">
+            <soap:operation soapAction="urn:getProcessImage" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="InstanceNotFoundException">
+                <soap:fault use="literal" name="InstanceNotFoundException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+				
+		
+		<wsdl:operation name="getCorrelationSetsToMap">
+            <soap:operation soapAction="urn:getCorrelationSetsToMap" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="InstanceNotFoundException">
+                <soap:fault use="literal" name="InstanceNotFoundException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+
+		
+		<wsdl:operation name="getPartnerLinksToMap">
+            <soap:operation soapAction="urn:getPartnerLinksToMap" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="InstanceNotFoundException">
+                <soap:fault use="literal" name="InstanceNotFoundException"/>
+            </wsdl:fault>
+        </wsdl:operation>		
+		
+		<wsdl:operation name="getVariablesToMap">
+            <soap:operation soapAction="urn:getVariablesToMap" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="InstanceNotFoundException">
+                <soap:fault use="literal" name="InstanceNotFoundException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+		
+		
+        <wsdl:operation name="getDanglingExits">
+            <soap:operation soapAction="urn:getDanglingExits" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="InstanceNotFoundException">
+                <soap:fault use="literal" name="InstanceNotFoundException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+		
+		<wsdl:operation name="getIgnorableExits">
+            <soap:operation soapAction="urn:getIgnorableExits" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="InstanceNotFoundException">
+                <soap:fault use="literal" name="InstanceNotFoundException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+		
+		<wsdl:operation name="getIgnorableEntries">
+            <soap:operation soapAction="urn:getIgnorableEntries" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="InstanceNotFoundException">
+                <soap:fault use="literal" name="InstanceNotFoundException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+		
+	    <wsdl:operation name="getAvailableCorrelationSets">
+            <soap:operation soapAction="urn:getAvailableCorrelationSets" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="InstanceNotFoundException">
+                <soap:fault use="literal" name="InstanceNotFoundException"/>
+            </wsdl:fault>
+            <wsdl:fault name="FragmentCompositionException">
+                <soap:fault use="literal" name="FragmentCompositionException"/>
+            </wsdl:fault>
+        </wsdl:operation>	
+        <wsdl:operation name="getAvailablePartnerLinks">
+            <soap:operation soapAction="urn:getAvailablePartnerLinks" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="InstanceNotFoundException">
+                <soap:fault use="literal" name="InstanceNotFoundException"/>
+            </wsdl:fault>
+            <wsdl:fault name="FragmentCompositionException">
+                <soap:fault use="literal" name="FragmentCompositionException"/>
+            </wsdl:fault>
+        </wsdl:operation>		
+		
+        <wsdl:operation name="getAvailableVariables">
+            <soap:operation soapAction="urn:getAvailableVariables" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="InstanceNotFoundException">
+                <soap:fault use="literal" name="InstanceNotFoundException"/>
+            </wsdl:fault>
+            <wsdl:fault name="FragmentCompositionException">
+                <soap:fault use="literal" name="FragmentCompositionException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+
+        <wsdl:operation name="getFragmentContainers">
+            <soap:operation soapAction="urn:getFragmentContainers" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="InstanceNotFoundException">
+                <soap:fault use="literal" name="InstanceNotFoundException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="getDanglingEntries">
+            <soap:operation soapAction="urn:getDanglingEntries" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="InstanceNotFoundException">
+                <soap:fault use="literal" name="InstanceNotFoundException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="glue">
+            <soap:operation soapAction="urn:glue" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="InstanceNotFoundException">
+                <soap:fault use="literal" name="InstanceNotFoundException"/>
+            </wsdl:fault>
+            <wsdl:fault name="FragmentCompositionException">
+                <soap:fault use="literal" name="FragmentCompositionException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:binding name="FragmentCompositionSoap12Binding" type="ns:FragmentCompositionPortType">
+        <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" style="document"/>
+        <wsdl:operation name="wireAndMap">
+            <soap12:operation soapAction="urn:wireAndMap" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="InstanceNotFoundException">
+                <soap12:fault use="literal" name="InstanceNotFoundException"/>
+            </wsdl:fault>
+            <wsdl:fault name="FragmentCompositionException">
+                <soap12:fault use="literal" name="FragmentCompositionException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+		<wsdl:operation name="ignoreFragmentExit">
+            <soap12:operation soapAction="urn:ignoreFragmentExit" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="InstanceNotFoundException">
+                <soap12:fault use="literal" name="InstanceNotFoundException"/>
+            </wsdl:fault>
+            <wsdl:fault name="FragmentCompositionException">
+                <soap12:fault use="literal" name="FragmentCompositionException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+		
+		<wsdl:operation name="ignoreFragmentEntry">
+            <soap12:operation soapAction="urn:ignoreFragmentEntry" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="InstanceNotFoundException">
+                <soap12:fault use="literal" name="InstanceNotFoundException"/>
+            </wsdl:fault>
+            <wsdl:fault name="FragmentCompositionException">
+                <soap12:fault use="literal" name="FragmentCompositionException"/>
+            </wsdl:fault>
+        </wsdl:operation>		
+		
+		<wsdl:operation name="getProcessImage">
+            <soap12:operation soapAction="urn:getProcessImage" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="InstanceNotFoundException">
+                <soap12:fault use="literal" name="InstanceNotFoundException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+		
+		<wsdl:operation name="getCorrelationSetsToMap">
+            <soap12:operation soapAction="urn:getCorrelationSetsToMap" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="InstanceNotFoundException">
+                <soap12:fault use="literal" name="InstanceNotFoundException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+
+		<wsdl:operation name="getPartnerLinksToMap">
+            <soap12:operation soapAction="urn:getPartnerLinksToMap" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="InstanceNotFoundException">
+                <soap12:fault use="literal" name="InstanceNotFoundException"/>
+            </wsdl:fault>
+        </wsdl:operation>		
+		
+		<wsdl:operation name="getVariablesToMap">
+            <soap12:operation soapAction="urn:getVariablesToMap" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="InstanceNotFoundException">
+                <soap12:fault use="literal" name="InstanceNotFoundException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+		
+        <wsdl:operation name="getDanglingExits">
+            <soap12:operation soapAction="urn:getDanglingExits" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="InstanceNotFoundException">
+                <soap12:fault use="literal" name="InstanceNotFoundException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+	    
+		<wsdl:operation name="getIgnorableExits">
+            <soap12:operation soapAction="urn:getIgnorableExits" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="InstanceNotFoundException">
+                <soap12:fault use="literal" name="InstanceNotFoundException"/>
+            </wsdl:fault>
+        </wsdl:operation>	
+
+		<wsdl:operation name="getIgnorableEntries">
+            <soap12:operation soapAction="urn:getIgnorableEntries" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="InstanceNotFoundException">
+                <soap12:fault use="literal" name="InstanceNotFoundException"/>
+            </wsdl:fault>
+        </wsdl:operation>	
+		
+		<wsdl:operation name="getAvailableCorrelationSets">
+            <soap12:operation soapAction="urn:getAvailableCorrelationSets" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="InstanceNotFoundException">
+                <soap12:fault use="literal" name="InstanceNotFoundException"/>
+            </wsdl:fault>
+            <wsdl:fault name="FragmentCompositionException">
+                <soap12:fault use="literal" name="FragmentCompositionException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+		<wsdl:operation name="getAvailablePartnerLinks">
+            <soap12:operation soapAction="urn:getAvailablePartnerLinks" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="InstanceNotFoundException">
+                <soap12:fault use="literal" name="InstanceNotFoundException"/>
+            </wsdl:fault>
+            <wsdl:fault name="FragmentCompositionException">
+                <soap12:fault use="literal" name="FragmentCompositionException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+		
+		
+		
+        <wsdl:operation name="getAvailableVariables">
+            <soap12:operation soapAction="urn:getAvailableVariables" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="InstanceNotFoundException">
+                <soap12:fault use="literal" name="InstanceNotFoundException"/>
+            </wsdl:fault>
+            <wsdl:fault name="FragmentCompositionException">
+                <soap12:fault use="literal" name="FragmentCompositionException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+
+        <wsdl:operation name="getFragmentContainers">
+            <soap12:operation soapAction="urn:getFragmentContainers" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="InstanceNotFoundException">
+                <soap12:fault use="literal" name="InstanceNotFoundException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="getDanglingEntries">
+            <soap12:operation soapAction="urn:getDanglingEntries" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="InstanceNotFoundException">
+                <soap12:fault use="literal" name="InstanceNotFoundException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="glue">
+            <soap12:operation soapAction="urn:glue" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="InstanceNotFoundException">
+                <soap12:fault use="literal" name="InstanceNotFoundException"/>
+            </wsdl:fault>
+            <wsdl:fault name="FragmentCompositionException">
+                <soap12:fault use="literal" name="FragmentCompositionException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:binding name="FragmentCompositionHttpBinding" type="ns:FragmentCompositionPortType">
+        <http:binding verb="POST"/>
+        <wsdl:operation name="wireAndMap">
+            <http:operation location="FragmentComposition/wireAndMap"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="wireAndMap"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="wireAndMap"/>
+            </wsdl:output>
+        </wsdl:operation>
+		
+		
+		<wsdl:operation name="ignoreFragmentExit">
+            <http:operation location="FragmentComposition/ignoreFragmentExit"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="ignoreFragmentExit"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="ignoreFragmentExit"/>
+            </wsdl:output>
+        </wsdl:operation>
+		
+		<wsdl:operation name="ignoreFragmentEntry">
+            <http:operation location="FragmentComposition/ignoreFragmentEntry"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="ignoreFragmentEntry"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="ignoreFragmentEntry"/>
+            </wsdl:output>
+        </wsdl:operation>
+
+		
+		<wsdl:operation name="getPartnerLinksToMap">
+            <http:operation location="FragmentComposition/getPartnerLinksToMap"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="getPartnerLinksToMap"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="getPartnerLinksToMap"/>
+            </wsdl:output>
+        </wsdl:operation>
+
+		<wsdl:operation name="getCorrelationSetsToMap">
+            <http:operation location="FragmentComposition/getCorrelationSetsToMap"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="getCorrelationSetsToMap"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="getCorrelationSetsToMap"/>
+            </wsdl:output>
+        </wsdl:operation>		
+		
+		<wsdl:operation name="getVariablesToMap">
+            <http:operation location="FragmentComposition/getVariablesToMap"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="getVariablesToMap"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="getVariablesToMap"/>
+            </wsdl:output>
+        </wsdl:operation>
+		
+		
+		
+        <wsdl:operation name="getProcessImage">
+            <http:operation location="FragmentComposition/getProcessImage"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="getProcessImage"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="getProcessImage"/>
+            </wsdl:output>
+        </wsdl:operation>
+		
+		
+        <wsdl:operation name="getDanglingExits">
+            <http:operation location="FragmentComposition/getDanglingExits"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="getDanglingExits"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="getDanglingExits"/>
+            </wsdl:output>
+        </wsdl:operation>
+		
+        <wsdl:operation name="getIgnorableExits">
+            <http:operation location="FragmentComposition/getIgnorableExits"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="getIgnorableExits"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="getIgnorableExits"/>
+            </wsdl:output>
+        </wsdl:operation>		
+        <wsdl:operation name="getIgnorableEntries">
+            <http:operation location="FragmentComposition/getIgnorableEntries"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="getIgnorableEntries"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="getIgnorableEntries"/>
+            </wsdl:output>
+        </wsdl:operation>	
+		
+		
+        <wsdl:operation name="getAvailableCorrelationSets">
+            <http:operation location="FragmentComposition/getAvailableCorrelationSets"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="getAvailableCorrelationSets"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="getAvailableCorrelationSets"/>
+            </wsdl:output>
+        </wsdl:operation>	
+		
+        <wsdl:operation name="getAvailablePartnerLinks">
+            <http:operation location="FragmentComposition/getAvailablePartnerLinks"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="getAvailablePartnerLinks"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="getAvailablePartnerLinks"/>
+            </wsdl:output>
+        </wsdl:operation>		
+		
+        <wsdl:operation name="getAvailableVariables">
+            <http:operation location="FragmentComposition/getAvailableVariables"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="getAvailableVariables"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="getAvailableVariables"/>
+            </wsdl:output>
+        </wsdl:operation>
+
+        <wsdl:operation name="getFragmentContainers">
+            <http:operation location="FragmentComposition/getFragmentContainers"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="getFragmentContainers"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="getFragmentContainers"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="getDanglingEntries">
+            <http:operation location="FragmentComposition/getDanglingEntries"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="getDanglingEntries"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="getDanglingEntries"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="glue">
+            <http:operation location="FragmentComposition/glue"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="glue"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="glue"/>
+            </wsdl:output>
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:service name="FragmentComposition">
+        <wsdl:port name="FragmentCompositionHttpSoap11Endpoint" binding="ns:FragmentCompositionSoap11Binding">
+            <soap:address location="http://localhost:8080/ode/processes/FragmentComposition"/>
+        </wsdl:port>
+        <wsdl:port name="FragmentCompositionHttpSoap12Endpoint" binding="ns:FragmentCompositionSoap12Binding">
+            <soap12:address location="http://localhost:8080/ode/processes/FragmentComposition"/>
+        </wsdl:port>
+        <wsdl:port name="FragmentCompositionHttpEndpoint" binding="ns:FragmentCompositionHttpBinding">
+            <http:address location="http://localhost:8080/ode/processes/FragmentComposition"/>
+        </wsdl:port>
+    </wsdl:service>
+</wsdl:definitions>

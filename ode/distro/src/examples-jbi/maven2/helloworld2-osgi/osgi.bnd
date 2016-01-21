@@ -1,0 +1,3 @@
+Import-Package: org.apache.servicemix.cxfbc,org.apache.servicemix.common.osgi
+Include-Resource: src/main/resources
+Export-Package:
