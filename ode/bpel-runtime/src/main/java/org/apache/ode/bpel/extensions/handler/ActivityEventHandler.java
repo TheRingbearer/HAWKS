@@ -75,6 +75,7 @@ import org.apache.ode.bpel.extensions.processes.Activity_Status;
 import org.apache.ode.bpel.extensions.processes.Compensation_Handler;
 import org.apache.ode.bpel.extensions.processes.Running_Activity;
 import org.apache.ode.bpel.extensions.processes.Running_Scope;
+import org.apache.ode.bpel.extensions.sync.Constants;
 import org.apache.ode.bpel.o.OElementVarType;
 import org.apache.ode.bpel.o.OMessageVarType;
 import org.apache.ode.bpel.o.OScope;
@@ -132,7 +133,9 @@ public class ActivityEventHandler {
 		comm = Communication.getInstance();
 		genCon = GenericController.getInstance();
 		block = BlockingManager.getInstance();
-		System.out.println("ActivityEventHandler instantiated.");
+		if (Constants.DEBUG_LEVEL > 0) {
+			System.out.println("ActivityEventHandler instantiated.");
+		}
 	}
 
 	public static ActivityEventHandler getInstance() {
@@ -604,7 +607,6 @@ public class ActivityEventHandler {
 	}
 
 	// possibly blocking
-	//krwczk: TODO -make it blocking
 	public void Activity_Ready(String act_name, String act_xpath, Long ID,
 			String scope_xpath, Long scope_ID, QName processName,
 			Long processID, LinkStatusChannel signal, Boolean artificial,
@@ -637,6 +639,9 @@ public class ActivityEventHandler {
 		{
 
 			if (!artificial) {
+				if (Constants.DEBUG_LEVEL > 0) {
+					System.out.println("ODE - not blocking activity " + act_xpath + " in process " + processID);
+				}
 				Activity_Ready message = new Activity_Ready();
 				comm.fillActivityEventMessage(message, genCon.getTimestamp(),
 						procName, processID, scope_ID, scope_xpath, null,
@@ -659,6 +664,10 @@ public class ActivityEventHandler {
 
 			addBlockingEvent(message.getMessageID(), act_xpath, scope_ID,
 					processID, true, bpelEvent, version);
+			if (Constants.DEBUG_LEVEL > 0) {
+				System.out.println("ODE - blocking activity " + act_xpath + " in process " + processID);
+				System.out.println("Send message with id " + message.getMessageID());
+			}
 			comm.sendMessageToTopic(message);
 		}
 
@@ -902,6 +911,10 @@ public class ActivityEventHandler {
 	public void Activity_Complete(String act_name, String xpath, Long ID,
 			String scope_xpath, Long scope_ID, QName processName,
 			Long processID, Boolean artificial, Boolean isScope) {
+		if (Constants.DEBUG_LEVEL > 0) {
+			System.out.println("ActivityEventHandler - Starting Activity_Complete Event for activity " + xpath + " and process " + processID);
+		}
+		
 		logger.fine("Activity_Complete!?%&$!" + ID + "!?%&$!" + xpath
 				+ "!?%&$!" + processName + "!?%&$!" + processID + "!?%&$!"
 				+ scope_ID);
@@ -921,10 +934,13 @@ public class ActivityEventHandler {
 					procName, processID, scope_ID, scope_xpath, null, xpath,
 					act_name);
 			comm.sendMessageToTopic(message);
+			if (Constants.DEBUG_LEVEL > 0) {
+				System.out.println("ActivityEventHandler - Sending Complete Message for activity " + xpath + " and process " + processID + " to topic");
+			}
 		}
 	}
 	
-	//krawczls: A method for skipping an acitivity.
+	//krawczls: A method for skipping an activity.
 	//          Sets the Activity_Status of that activity to uncommittedskipped.
 	public void Activity_Skipped(String act_name, String xpath, Long ID,
 			String scope_xpath, Long scope_ID, QName processName,
@@ -941,7 +957,7 @@ public class ActivityEventHandler {
 		updateActivityStatus(
 				processID,
 				xpath,
-				org.apache.ode.bpel.extensions.processes.Activity_Status.ActivityStatus.uncommittedskipped);
+				org.apache.ode.bpel.extensions.processes.Activity_Status.ActivityStatus.skipped);
 		
 		if (!artificial) {
 			Activity_Skipped message = new Activity_Skipped();
@@ -1383,7 +1399,36 @@ public class ActivityEventHandler {
 		}
 
 	}
+	
+	//@krawczls:
+	public void Scope_Activity_Skipped(String act_name, String xpath,
+			Long ID, String scope_xpath, Long scope_ID, QName processName,
+			Long processID, Boolean artificial, Boolean isScope,
+			Long selfScopeID, Boolean ignore) {
+		logger.fine("Scope_Activity_Skipped!?%&$!" + ID + "!?%&$!" + xpath
+				+ "!?%&$!" + processName + "!?%&$!" + processID + "!?%&$!"
+				+ scope_ID + "!?%&$!" + selfScopeID);
 
+		QName procName = comm.cropQName(processName);
+
+		removeRunningScope(processName, processID, selfScopeID);
+		removeRunningActivity(processID, scope_ID, xpath);
+
+		updateActivityStatus(
+				processID,
+				xpath,
+				org.apache.ode.bpel.extensions.processes.Activity_Status.ActivityStatus.skipped);
+
+		if (!ignore) {
+			Activity_Skipped message = new Activity_Skipped();
+			comm.fillActivityEventMessage(message, genCon.getTimestamp(),
+					procName, processID, scope_ID, scope_xpath, selfScopeID,
+					xpath, act_name);
+			comm.sendMessageToTopic(message);
+		}
+
+	}
+	
 	// not blocking
 	public void Scope_Activity_Executing(String act_name, String xpath,
 			Long ID, String scope_xpath, Long scope_ID, QName processName,

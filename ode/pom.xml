@@ -220,7 +220,7 @@
                     <version>2.5</version>
                     <configuration>
                         <minmemory>128m</minmemory>
-                        <maxmemory>512m</maxmemory>
+                        <maxmemory>1024m</maxmemory>
                     </configuration>
                 </plugin>
             </plugins>

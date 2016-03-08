@@ -1,12 +1,12 @@
 ----------------------------------------------------------------
-2016-01-12 09:07:34.385 GMT:
- Booting Derby version The Apache Software Foundation - Apache Derby - 10.5.3.0 - (802917): instance a816c00e-0152-3517-20e2-000050ca33b8
-on database directory C:\Users\David\Documents\SVN-Krawczls Code\ode\dao-jpa-ojpa-derby\target\derby\jpadb  
+2016-03-03 08:50:37.831 GMT:
+ Booting Derby version The Apache Software Foundation - Apache Derby - 10.5.3.0 - (802917): instance a816c00e-0153-3bab-f1a1-00004cf15218
+on database directory C:\Users\Lukas\Documents\Studium\Semester13\Studienarbeit\2015-01-13 Kick-Off\working copy\ode\dao-jpa-ojpa-derby\target\derby\jpadb  
 
 Database Class Loader started - derby.database.classpath=''
 ----------------------------------------------------------------
-2016-01-12 09:07:41.149 GMT:
- Booting Derby version The Apache Software Foundation - Apache Derby - 10.5.3.0 - (802917): instance 63c241b2-0152-3517-20e2-000050ca33b8
-on database directory C:\Users\David\Documents\SVN-Krawczls Code\ode\dao-hibernate-db\target\derby\hibdb  
+2016-03-03 08:50:46.106 GMT:
+ Booting Derby version The Apache Software Foundation - Apache Derby - 10.5.3.0 - (802917): instance 63c241b2-0153-3bab-f1a1-00004cf15218
+on database directory C:\Users\Lukas\Documents\Studium\Semester13\Studienarbeit\2015-01-13 Kick-Off\working copy\ode\dao-hibernate-db\target\derby\hibdb  
 
 Database Class Loader started - derby.database.classpath=''

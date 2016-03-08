@@ -11,19 +11,35 @@ import java.io.Serializable;
 public class Activity implements Serializable{
 	
 	static final long serialVersionUID = 455; 
-	private String activity;
-	private String xpath;
-	private Long scope_id;
-	private Long process_id;
-	private Long message_id;
-	private int view;
-	private String status;
-	private int engine_number;
+	private String activity = "-";
+	private String xpath = "-";
+	private Long scope_id = 0L;
+	private Long process_id = 0L;
+	private Long message_id = 0L;
+	private int view = 0;
+	private String status = "-";
+	private int engine_number = 0;
 	
 	/**
 	 * A default constructor.
 	 */
-	public Activity(){		
+	public Activity() {		
+	}
+	
+	/**
+	 * A copy constructor.
+	 * 
+	 * @param activity
+	 */
+	public Activity(Activity activity) {
+		this.activity = activity.get_activity();
+		this.engine_number = activity.get_engine_number();
+		this.message_id = activity.get_message_id();
+		this.process_id = activity.get_process_id();
+		this.scope_id = activity.get_scope_id();
+		this.status = activity.get_status();
+		this.view = activity.get_view();
+		this.xpath = activity.get_xpath();
 	}
 	
 	/**
@@ -49,7 +65,37 @@ public class Activity implements Serializable{
 		this.engine_number = engine_number;
 	}
 	
-	
+
+	@Override
+	public int hashCode() {
+		return activity.hashCode() + 13*xpath.hashCode() + 17*view + 31*status.hashCode() + 53*engine_number + process_id.hashCode()*79;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == null) {
+			return false;
+		}
+		if (obj == this) {
+			return true;
+		}
+		if (obj.getClass() == this.getClass()) {
+			Activity b = (Activity)obj;
+			if (this.activity.equals(b.get_activity())
+					&& this.xpath.equals(b.get_xpath())
+					&& this.scope_id == b.get_scope_id()
+					&& this.process_id == b.get_process_id()
+					&& this.message_id == b.get_message_id()
+					&& this.view == b.get_view()
+					&& this.status.equals(b.get_status())
+					&& this.engine_number == b.get_engine_number()) {
+				return true;
+			}
+		}
+		return false;
+	}
+  
+    
 	/**
 	 * Getter method for the field this_activity.
 	 * 

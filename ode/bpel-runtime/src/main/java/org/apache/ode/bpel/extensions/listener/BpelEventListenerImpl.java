@@ -33,6 +33,7 @@ import org.apache.ode.bpel.extensions.events.ScopeActivityExecuted;
 import org.apache.ode.bpel.extensions.events.ScopeActivityExecuting;
 import org.apache.ode.bpel.extensions.events.ScopeActivityFaulted;
 import org.apache.ode.bpel.extensions.events.ScopeActivityReady;
+import org.apache.ode.bpel.extensions.events.ScopeActivitySkipped;
 import org.apache.ode.bpel.extensions.events.ScopeActivityTerminated;
 import org.apache.ode.bpel.extensions.events.ScopeCompensated;
 import org.apache.ode.bpel.extensions.events.ScopeCompensating;
@@ -43,6 +44,7 @@ import org.apache.ode.bpel.extensions.events.ScopeHandlingFault;
 import org.apache.ode.bpel.extensions.events.ScopeHandlingTermination;
 import org.apache.ode.bpel.extensions.handler.ActivityEventHandler;
 import org.apache.ode.bpel.extensions.handler.InstanceEventHandler;
+import org.apache.ode.bpel.extensions.sync.Constants;
 import org.apache.ode.bpel.iapi.BpelEventListener;
 
 //@stmz: listens to BpelEvents that occur during execution of process instances
@@ -135,7 +137,7 @@ public class BpelEventListenerImpl implements BpelEventListener {
 					evt.getID_scope(), evt.getProcess_name(),
 					evt.getProcess_ID(), evt.getArtificial(), evt.getIsScope());
 		}
-		//krawczls: TODO -extend by the parameters specified in ActivitySkipped
+		//krawczls:
 		else if (bpelEvent instanceof ActivitySkipped) {
 			ActivitySkipped evt = (ActivitySkipped) bpelEvent;
 			aeh.Activity_Skipped(evt.getActivity_name(), evt.getXpath_act(),
@@ -257,6 +259,16 @@ public class BpelEventListenerImpl implements BpelEventListener {
 		else if (bpelEvent instanceof ScopeActivityTerminated) {
 			ScopeActivityTerminated evt = (ScopeActivityTerminated) bpelEvent;
 			aeh.Scope_Activity_Terminated(evt.getActivity_name(),
+					evt.getXpath_act(), evt.getID_act(),
+					evt.getXpath_surrounding_scope(), evt.getID_scope(),
+					evt.getProcess_name(), evt.getProcess_ID(),
+					evt.getArtificial(), evt.getIsScope(),
+					evt.getSelfScopeID(), evt.getIgnore());
+		}
+		//krawczls:
+		else if (bpelEvent instanceof ScopeActivitySkipped) {
+			ScopeActivitySkipped evt = (ScopeActivitySkipped) bpelEvent;
+			aeh.Scope_Activity_Skipped(evt.getActivity_name(),
 					evt.getXpath_act(), evt.getID_act(),
 					evt.getXpath_surrounding_scope(), evt.getID_scope(),
 					evt.getProcess_name(), evt.getProcess_ID(),
@@ -421,13 +433,17 @@ public class BpelEventListenerImpl implements BpelEventListener {
 	}
 
 	public void shutdown() {
-		System.out.println("Listener shutdown.");
+		if (Constants.DEBUG_LEVEL > 0) {
+			System.out.println("Listener shutdown.");
+		}
 
 	}
 
 	public void startup(Properties configProperties) {
 		ieh = InstanceEventHandler.getInstance();
-		System.out.println("Listener started.");
+		if (Constants.DEBUG_LEVEL > 0) {
+			System.out.println("Listener started.");
+		}
 	}
 
 }

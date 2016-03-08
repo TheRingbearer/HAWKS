@@ -41,6 +41,7 @@ import org.apache.ode.bpel.extensions.events.ScopeActivityExecuted;
 import org.apache.ode.bpel.extensions.events.ScopeActivityExecuting;
 import org.apache.ode.bpel.extensions.events.ScopeActivityFaulted;
 import org.apache.ode.bpel.extensions.events.ScopeActivityReady;
+import org.apache.ode.bpel.extensions.events.ScopeActivitySkipped;
 import org.apache.ode.bpel.extensions.events.ScopeActivityTerminated;
 import org.apache.ode.bpel.extensions.events.ScopeCompleteWithFault;
 import org.apache.ode.bpel.extensions.events.ScopeHandlingFault;
@@ -172,9 +173,17 @@ public class SCOPE extends ACTIVITY {
 				_self.parent.completed(null, CompensationHandler.emptySet());
 			}
 			
-			//krwczk: TODO -implement skip
 			public void skip() {
-				
+				ScopeActivitySkipped evt = new ScopeActivitySkipped(
+						_self.o.name, _self.o.getId(), _self.o.getXpath(), _self.aId,
+						xpath_surrounding_scope, ID_surrounding_scope,
+						process_name, process_ID, _self.o.getArt(), true,
+						_scopeFrame.scopeInstanceId, _scopeFrame.ignore);
+				getBpelRuntimeContext().getBpelProcess().getEngine()
+						.fireEvent(evt);
+				_skippedActivity = true;
+				dpe(_self.o.outgoingLinks);
+				_self.parent.completed(null, CompensationHandler.emptySet());
 			}
 
 		};
@@ -274,10 +283,18 @@ public class SCOPE extends ACTIVITY {
 				_self.parent.completed(null, CompensationHandler.emptySet());
 
 			}
-			
-			//krwczk: TODO -implement skip
+			//krawczls:
 			public void skip() {
-				
+				ScopeActivitySkipped evt = new ScopeActivitySkipped(
+						_self.o.name, _self.o.getId(), _self.o.getXpath(), _self.aId,
+						xpath_surrounding_scope, ID_surrounding_scope,
+						process_name, process_ID, _self.o.getArt(), true,
+						_scopeFrame.scopeInstanceId, _scopeFrame.ignore);
+				getBpelRuntimeContext().getBpelProcess().getEngine()
+						.fireEvent(evt);
+				_terminatedActivity = true;
+				dpe(_self.o.outgoingLinks);
+				_self.parent.completed(null, CompensationHandler.emptySet());
 			}
 
 		});
@@ -394,10 +411,13 @@ public class SCOPE extends ACTIVITY {
 		private static final long serialVersionUID = -5876892592071965346L;
 		/** Links collected. */
 		private boolean _terminated;
+		//krawczls:
+		private boolean _skipped;
 		private FaultData _fault;
 		private long _startTime;
 		private HashSet<CompensationHandler> _compensations = new HashSet<CompensationHandler>();
 		private boolean _childTermRequested;
+		private boolean _childSkipRequested;
 
 		// Maintain a set of links needing dead-path elimination.
 		Set<OLink> linksNeedingDPE = new HashSet<OLink>();
@@ -436,9 +456,24 @@ public class SCOPE extends ACTIVITY {
 						instance(ACTIVE.this);
 					}
 					
-					//krwczk: TODO -implement skip
+					//krawczls:
 					public void skip() {
-						
+						if (_skipped == false) {
+							_skipped = true;
+
+							// Forward the skip request to the nested
+							// activity.
+							if (_child != null && !_childSkipRequested) {
+								replication(_child.self).skip();
+								_childSkipRequested = true;
+							}
+
+							// Forward the termination request to our event
+							// handlers.
+							skipEventHandlers();
+						}
+
+						instance(ACTIVE.this);
 					}
 				});
 
@@ -806,9 +841,18 @@ public class SCOPE extends ACTIVITY {
 
 				}
 				
-				//krwczk: TODO -implement skip
+				//krawczls:
 				public void skip() {
-					
+					ScopeActivitySkipped evt = new ScopeActivitySkipped(
+							_self.o.name, _self.o.getId(), _self.o.getXpath(), _self.aId,
+							xpath_surrounding_scope, ID_surrounding_scope,
+							process_name, process_ID, _self.o.getArt(), true,
+							_scopeFrame.scopeInstanceId, _scopeFrame.ignore);
+					getBpelRuntimeContext().getBpelProcess().getEngine()
+							.fireEvent(evt);
+					_skippedActivity = true;
+					dpe(linksNeedingDPE);
+					_self.parent.completed(null, _compensations);
 				}
 
 			});
@@ -1074,23 +1118,36 @@ public class SCOPE extends ACTIVITY {
 			getBpelRuntimeContext().getBpelProcess().getEngine()
 					.fireEvent(evt2);
 		}
-
+		
+		//krawczls: added skipRequested
 		private void terminateEventHandlers() {
 			for (Iterator<EventHandlerInfo> i = _eventHandlers.iterator(); i
 					.hasNext();) {
 				EventHandlerInfo ehi = i.next();
-				if (!ehi.terminateRequested && !ehi.stopRequested) {
+				if (!ehi.terminateRequested && !ehi.stopRequested && !ehi.skipRequested) {
 					replication(ehi.tc).terminate();
 					ehi.terminateRequested = true;
 				}
 			}
 		}
-
+		
+		//krawczls:
+		private void skipEventHandlers() {
+			for (Iterator<EventHandlerInfo> i = _eventHandlers.iterator(); i
+				.hasNext();) {
+				EventHandlerInfo ehi = i.next();
+				if (!ehi.terminateRequested && !ehi.stopRequested && !ehi.skipRequested) {
+					replication(ehi.tc).skip();
+					ehi.skipRequested = true;
+				}
+			}
+		}
+		
 		private void stopEventHandlers() {
 			for (Iterator<EventHandlerInfo> i = _eventHandlers.iterator(); i
 					.hasNext();) {
 				EventHandlerInfo ehi = i.next();
-				if (!ehi.stopRequested && !ehi.terminateRequested) {
+				if (!ehi.stopRequested && !ehi.terminateRequested && !ehi.skipRequested) {
 					ehi.cc.stop();
 					ehi.stopRequested = true;
 				}
@@ -1253,6 +1310,7 @@ public class SCOPE extends ACTIVITY {
 		final ParentScopeChannel psc;
 		final TerminationChannel tc;
 		boolean terminateRequested;
+		boolean skipRequested;
 		boolean stopRequested;
 
 		EventHandlerInfo(OBase o, EventHandlerControlChannel cc,

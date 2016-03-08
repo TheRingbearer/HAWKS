@@ -94,7 +94,6 @@ public class WAIT extends ACTIVITY {
 				_self.parent.completed(null, CompensationHandler.emptySet());
 			}
 			
-			//krwczk: TODO -implement skip
 			public void skip() {
 				//Event Activity_Skipped
 				ActivitySkipped evt = new ActivitySkipped(_self.o.name, _self.o.getId(),
@@ -257,7 +256,6 @@ public class WAIT extends ACTIVITY {
 					});
 				}
 				
-				//krwczk: TODO -implement skip
 				public void skip() {
 					//Event Activity_Skipped
 					ActivitySkipped evt = new ActivitySkipped(_self.o.name, _self.o.getId(),
@@ -268,6 +266,17 @@ public class WAIT extends ACTIVITY {
 					.fireEvent(evt);
 					_skippedActivity = true;
 					_self.parent.completed(null, CompensationHandler.emptySet());
+					object(new TimerResponseChannelListener(timerChannel) {
+						private static final long serialVersionUID = 677746737897792927L;
+						
+						public void onTimeout() {
+							// ignore
+						}
+
+						public void onCancel() {
+							// ingore
+						}
+					});
 				}
 			}));
 		} else {
@@ -311,9 +320,16 @@ public class WAIT extends ACTIVITY {
 				_self.parent.completed(null, CompensationHandler.emptySet());
 			}
 			
-			//krwczk: TODO -implement skip
 			public void skip() {
-				
+				//Event Activity_Skipped
+				ActivitySkipped evt = new ActivitySkipped(_self.o.name, _self.o.getId(),
+						_self.o.getXpath(), _self.aId,
+						sFrame.oscope.getXpath(), sFrame.scopeInstanceId,
+						process_name, process_ID, _self.o.getArt(), false);
+				getBpelRuntimeContext().getBpelProcess().getEngine()
+				.fireEvent(evt);
+				_skippedActivity = true;
+				_self.parent.completed(null, CompensationHandler.emptySet());
 			}
 
 		};

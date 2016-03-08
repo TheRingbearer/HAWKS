@@ -43,6 +43,7 @@ import org.apache.ode.bpel.engine.iteration.RepetitionAndJumpHelper;
 import org.apache.ode.bpel.evt.CorrelationMatchEvent;
 import org.apache.ode.bpel.evt.CorrelationNoMatchEvent;
 import org.apache.ode.bpel.evt.NewProcessInstanceEvent;
+import org.apache.ode.bpel.extensions.sync.Constants;
 import org.apache.ode.bpel.iapi.Endpoint;
 import org.apache.ode.bpel.iapi.MessageExchange;
 import org.apache.ode.bpel.iapi.MyRoleMessageExchange;
@@ -196,6 +197,9 @@ public class PartnerLinkMyRoleImpl extends PartnerLinkRoleImpl {
 			RoutingInfo routing) {
 
 		// AH: deploy new version of the same process model
+		if (Constants.DEBUG_LEVEL > 0) {
+			System.out.println("PartnerLinkMyRoleImpl - invokeNewInstance1");
+		}
 		BpelProcess newProcess = _process;
 		// final List<File> files = _process.getConf().getFiles();
 		// final String name = _process.getProcessType().getLocalPart();
@@ -205,23 +209,45 @@ public class PartnerLinkMyRoleImpl extends PartnerLinkRoleImpl {
 				.getConf());
 		BpelProcess rootProcess = _process.getEngine().getProcess(root);
 		final List<File> files = rootProcess.getConf().getFiles();
+		if (Constants.DEBUG_LEVEL > 0) {
+			System.out.println("PartnerLinkMyRoleImpl - invokeNewInstance2");
+		}
 		// String name =
 		// FragmentCompositionUtil.getDeploymentUnitName(_process.getConf());
 
 		if (_process.isProcessFragment()) {
+			if (Constants.DEBUG_LEVEL > 0) {
+				System.out.println("PartnerLinkMyRoleImpl - invokeNewInstance3");
+			}
 			// deploy new process model only if it is a process fragment
 			ProcessRegistry registry = _process.getEngine()
 					.getProcessRegistry();
+			if (Constants.DEBUG_LEVEL > 0) {
+				System.out.println("PartnerLinkMyRoleImpl - invokeNewInstance4");
+			}
 			try {
-
+				if (Constants.DEBUG_LEVEL > 0) {
+					System.out.println("PartnerLinkMyRoleImpl - invokeNewInstance5");
+				}
 				registry.releaseManagementReadLock();
-
+				if (Constants.DEBUG_LEVEL > 0) {
+					System.out.println("PartnerLinkMyRoleImpl - invokeNewInstance6");
+				}
 				Deployer d = new Deployer();
 				String duName = _process.getEngine()
 						.getDeploymentUnitNameGenerator()
 						.getDeploymentUnitName(rootProcess);
+				if (Constants.DEBUG_LEVEL > 0) {
+					System.out.println("PartnerLinkMyRoleImpl - invokeNewInstance7");
+				}
 				QName[] ids = d.deployNewProcessVersion(files, duName);
+				if (Constants.DEBUG_LEVEL > 0) {
+					System.out.println("PartnerLinkMyRoleImpl - invokeNewInstance8");
+				}
 				for (QName id : ids) {
+					if (Constants.DEBUG_LEVEL > 0) {
+						System.out.println("PartnerLinkMyRoleImpl - invokeNewInstance9");
+					}
 					BpelProcess process = _process.getEngine().getProcess(id);
 					QName currentRoot = FragmentCompositionUtil
 							.getRootProcessQName(process.getConf());
@@ -233,6 +259,9 @@ public class PartnerLinkMyRoleImpl extends PartnerLinkRoleImpl {
 
 				// newProcess = _process;
 			} finally {
+				if (Constants.DEBUG_LEVEL > 0) {
+					System.out.println("PartnerLinkMyRoleImpl - invokeNewInstance10");
+				}
 				registry.getManagementReadLock();
 			}
 
@@ -245,28 +274,46 @@ public class PartnerLinkMyRoleImpl extends PartnerLinkRoleImpl {
 			 * });
 			 */
 		}
-
+		if (Constants.DEBUG_LEVEL > 0) {
+			System.out.println("PartnerLinkMyRoleImpl - invokeNewInstance11");
+		}
 		// AH: changed process to newProcess
 		if (newProcess != null) {
-
+			if (Constants.DEBUG_LEVEL > 0) {
+				System.out.println("PartnerLinkMyRoleImpl - invokeNewInstance12");
+			}
 			Operation operation = getMyRoleOperation(mex.getOperationName());
-
+			if (Constants.DEBUG_LEVEL > 0) {
+				System.out.println("PartnerLinkMyRoleImpl - invokeNewInstance13");
+			}
 			if (__log.isDebugEnabled()) {
 				__log.debug("INPUTMSG: " + routing.correlator.getCorrelatorId()
 						+ ": routing failed, CREATING NEW INSTANCE");
 			}
-
+			if (Constants.DEBUG_LEVEL > 0) {
+				System.out.println("PartnerLinkMyRoleImpl - invokeNewInstance14");
+			}
 			ProcessDAO processDAO = newProcess.getProcessDAO();
-
+			if (Constants.DEBUG_LEVEL > 0) {
+				System.out.println("PartnerLinkMyRoleImpl - invokeNewInstance15");
+			}
 			if (newProcess._pconf.getState() == ProcessState.RETIRED) {
+				if (Constants.DEBUG_LEVEL > 0) {
+					System.out.println("PartnerLinkMyRoleImpl - invokeNewInstance16");
+				}
 				throw new InvalidProcessException("Process is retired.",
 						InvalidProcessException.RETIRED_CAUSE_CODE);
 			}
-
+			if (Constants.DEBUG_LEVEL > 0) {
+				System.out.println("PartnerLinkMyRoleImpl - invokeNewInstance17");
+			}
 			if (!newProcess.processInterceptors(mex,
 					InterceptorInvoker.__onNewInstanceInvoked)) {
 				__log.debug("Not creating a new instance for mex " + mex
 						+ "; interceptor prevented!");
+				if (Constants.DEBUG_LEVEL > 0) {
+					System.out.println("PartnerLinkMyRoleImpl - invokeNewInstance18");
+				}
 				throw new InvalidProcessException(
 						"Cannot instantiate process '" + newProcess.getPID()
 								+ "' any more.",
@@ -275,27 +322,48 @@ public class PartnerLinkMyRoleImpl extends PartnerLinkRoleImpl {
 
 			// AH: we need new correlator
 			CorrelatorDAO correlator;
+			if (Constants.DEBUG_LEVEL > 0) {
+				System.out.println("PartnerLinkMyRoleImpl - invokeNewInstance19");
+			}
 			if (_process.isProcessFragment()) {
+				if (Constants.DEBUG_LEVEL > 0) {
+					System.out.println("PartnerLinkMyRoleImpl - invokeNewInstance20");
+				}
 				String correlatorId = BpelProcess.genCorrelatorId(_plinkDef,
 						operation.getName());
 
 				correlator = newProcess.getProcessDAO().getCorrelator(
 						correlatorId);
+				if (Constants.DEBUG_LEVEL > 0) {
+					System.out.println("PartnerLinkMyRoleImpl - invokeNewInstance21");
+				}
 			} else {
+				if (Constants.DEBUG_LEVEL > 0) {
+					System.out.println("PartnerLinkMyRoleImpl - invokeNewInstance22");
+				}
 				correlator = routing.correlator;
 			}
 			// AH: end
-
+			if (Constants.DEBUG_LEVEL > 0) {
+				System.out.println("PartnerLinkMyRoleImpl - invokeNewInstance23");
+			}
 			// AH: changed routing.correlator to correlator
 			ProcessInstanceDAO newInstance = processDAO
 					.createInstance(correlator);
+			if (Constants.DEBUG_LEVEL > 0) {
+				System.out.println("PartnerLinkMyRoleImpl - invokeNewInstance24");
+			}
 			// AH: end
 			BpelRuntimeContextImpl instance = newProcess.createRuntimeContext(
 					newInstance, new PROCESS(newProcess.getOProcess()), mex);
-			
+			if (Constants.DEBUG_LEVEL > 0) {
+				System.out.println("PartnerLinkMyRoleImpl - invokeNewInstance25");
+			}
 			// @hahnml: Reset the IterationHelper
 			RepetitionAndJumpHelper.getInstance().clear();
-
+			if (Constants.DEBUG_LEVEL > 0) {
+				System.out.println("PartnerLinkMyRoleImpl - invokeNewInstance26");
+			}
 			// send process instance event
 			NewProcessInstanceEvent evt = new NewProcessInstanceEvent(
 					new QName(newProcess.getOProcess().targetNamespace,
@@ -305,14 +373,34 @@ public class PartnerLinkMyRoleImpl extends PartnerLinkRoleImpl {
 			evt.setPortType(mex.getPortType().getQName());
 			evt.setOperation(operation.getName());
 			evt.setMexId(mex.getMessageExchangeId());
+			if (Constants.DEBUG_LEVEL > 0) {
+				System.out.println("PartnerLinkMyRoleImpl - invokeNewInstance27");
+			}
 			newProcess._debugger.onEvent(evt);
 			newProcess.saveEvent(evt, newInstance);
+			if (Constants.DEBUG_LEVEL > 0) {
+				System.out.println("PartnerLinkMyRoleImpl - invokeNewInstance28");
+			}
 			mex.setCorrelationStatus(MyRoleMessageExchange.CorrelationStatus.CREATE_INSTANCE);
+			if (Constants.DEBUG_LEVEL > 0) {
+				System.out.println("PartnerLinkMyRoleImpl - invokeNewInstance29");
+			}
 			mex.getDAO().setInstance(newInstance);
-			if (mex.getDAO().getCreateTime() == null)
+			if (Constants.DEBUG_LEVEL > 0) {
+				System.out.println("PartnerLinkMyRoleImpl - invokeNewInstance30");
+			}
+			if (mex.getDAO().getCreateTime() == null) {
+				if (Constants.DEBUG_LEVEL > 0) {
+					System.out.println("PartnerLinkMyRoleImpl - invokeNewInstance31");
+				}
 				mex.getDAO().setCreateTime(instance.getCurrentEventDateTime());
-
+			}
+			if (Constants.DEBUG_LEVEL > 0) {
+				System.out.println("PartnerLinkMyRoleImpl - invokeNewInstance32");
+			}
 			instance.execute();
+			if (Constants.DEBUG_LEVEL > 0) {
+			}
 		}
 		// AH: end
 	}

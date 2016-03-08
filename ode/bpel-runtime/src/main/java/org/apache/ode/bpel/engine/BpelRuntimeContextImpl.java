@@ -75,6 +75,7 @@ import org.apache.ode.bpel.evt.ScopeStartEvent;
 import org.apache.ode.bpel.extension.ExtensionBundleRuntime;
 import org.apache.ode.bpel.extension.ExtensionOperation;
 import org.apache.ode.bpel.extensions.handler.IncomingMessageHandler;
+import org.apache.ode.bpel.extensions.sync.Constants;
 import org.apache.ode.bpel.iapi.BpelEngineException;
 import org.apache.ode.bpel.iapi.ContextException;
 import org.apache.ode.bpel.iapi.Endpoint;
@@ -124,6 +125,7 @@ import org.apache.ode.utils.DOMUtils;
 import org.apache.ode.utils.GUID;
 import org.apache.ode.utils.Namespaces;
 import org.apache.ode.utils.ObjectPrinter;
+import org.apache.ode.utils.ZZBool;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -959,6 +961,9 @@ public class BpelRuntimeContextImpl implements BpelRuntimeContext {
 	public void registerTimer(TimerResponseChannel timerChannel,
 			Date timeToFire, OBase oElement) {
 		JobDetails we = new JobDetails();
+		if (Constants.DEBUG_LEVEL > 1) {
+			System.out.println("BpelRuntimeContextImpl - instanceID: " +  _dao.getInstanceId());
+		}
 		we.setInstanceId(_dao.getInstanceId());
 		we.setChannel(timerChannel.export());
 		we.setType(JobType.TIMER);
@@ -978,6 +983,9 @@ public class BpelRuntimeContextImpl implements BpelRuntimeContext {
 	private void scheduleCorrelatorMatcher(String correlatorId,
 			CorrelationKeySet keySet) {
 		JobDetails we = new JobDetails();
+		if (Constants.DEBUG_LEVEL > 1) {
+			System.out.println("BpelRuntimeContextImpl - instanceID: " +  _dao.getInstanceId());
+		}
 		we.setInstanceId(_dao.getInstanceId());
 		we.setType(JobType.MATCHER);
 		we.setCorrelatorId(correlatorId);
@@ -1433,33 +1441,51 @@ public class BpelRuntimeContextImpl implements BpelRuntimeContext {
 		// if we find one, add it to the execution queue
 		JacobRunnable tmp = null;
 		tmp = incMess.getRunnable(_iid);
+		if (Constants.DEBUG_LEVEL > 1) {
+			System.out.println("BpelRuntimeContextImpl - " + _iid + " " + ZZBool.getInstance().getCanRun());
+		}
 		if (tmp != null) {
 			_vpu.inject(tmp);
 		}
 
 		assert _outstandingRequests == null && _imaManager != null;
+		if (Constants.DEBUG_LEVEL > 1) {
+			System.out.println("BpelRuntimeContextImpl - " + _iid + " 1" + " " + ZZBool.getInstance().getCanRun());
+		}
 		while (ProcessState.canExecute(_dao.getState()) && /*
 															 * System.
 															 * currentTimeMillis
 															 * () < maxTime &&
 															 */canReduce) {
 			canReduce = _vpu.execute();
-
+			
 			// @stmz: search for a runnable, that was created when receiving an
 			// incoming event
 			// if we find one, add it to the execution queue
 			JacobRunnable tmp2 = null;
 			tmp2 = incMess.getRunnable(_iid);
 			if (tmp2 != null) {
+				if (Constants.DEBUG_LEVEL > 1) {
+					System.out.println("BpelRuntimeContextImpl - Received new Runnable " + tmp2.getOId() + " " + ZZBool.getInstance().getCanRun());
+				}
 				_vpu.inject(tmp2);
 			}
 		}
 		_dao.setLastActiveTime(new Date());
+		if (Constants.DEBUG_LEVEL > 1) {
+			System.out.println("BpelRuntimeContextImpl - " + _iid + " 5" + " " + ZZBool.getInstance().getCanRun());
+		}
 		if (!ProcessState.isFinished(_dao.getState())) {
+			if (Constants.DEBUG_LEVEL > 1) {
+				System.out.println("BpelRuntimeContextImpl - " + _iid + " 6" + " " + ZZBool.getInstance().getCanRun());
+			}
 			if (__log.isDebugEnabled())
-				__log.debug("Setting execution state on instance " + _iid);
+				__log.debug("Setting execution state on instance " + _iid + " " + ZZBool.getInstance().getCanRun());
 			_soup.setGlobalData(_imaManager);
-
+			
+			if (Constants.DEBUG_LEVEL > 1) {
+				System.out.println("BpelRuntimeContextImpl - " + _iid + " 7" + " " + ZZBool.getInstance().getCanRun());
+			}
 			if (_bpelProcess.isInMemory()) {
 				// don't serialize in-memory processes
 				((ProcessInstanceDaoImpl) _dao).setSoup(_soup);
@@ -1473,8 +1499,13 @@ public class BpelRuntimeContextImpl implements BpelRuntimeContext {
 				}
 				_dao.setExecutionState(bos.toByteArray());
 			}
-
+			if (Constants.DEBUG_LEVEL > 1) {
+				System.out.println("BpelRuntimeContextImpl - " + _iid + " 8" + " " + ZZBool.getInstance().getCanRun());
+			}
 			if (ProcessState.canExecute(_dao.getState()) && canReduce) {
+				if (Constants.DEBUG_LEVEL > 1) {
+					System.out.println("BpelRuntimeContextImpl - MaxTime exceeded for " + _iid + " " + ZZBool.getInstance().getCanRun());
+				}
 				// Max time exceeded (possibly an infinite loop).
 				if (__log.isDebugEnabled())
 					__log.debug("MaxTime exceeded for instance # " + _iid);
@@ -1495,7 +1526,9 @@ public class BpelRuntimeContextImpl implements BpelRuntimeContext {
 				}
 			}
 		}
-
+		if (Constants.DEBUG_LEVEL > 1) {
+			System.out.println("BpelRuntimeContextImpl - " + _iid + " finish" + " " + ZZBool.getInstance().getCanRun());
+		}
 		active = false;
 	}
 

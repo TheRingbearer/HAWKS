@@ -284,7 +284,7 @@ class ASSIGN extends ACTIVITY {
 				_terminatedActivity = true;
 				_self.parent.completed(null, CompensationHandler.emptySet());
 			}
-			//krwczk: TODO -implement skip
+
 			public void skip(){
 				//Event Activity_Skipped
 				ActivitySkipped evt = new ActivitySkipped(_self.o.name, _self.o.getId(),

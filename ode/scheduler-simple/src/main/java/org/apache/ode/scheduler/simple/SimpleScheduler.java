@@ -290,18 +290,17 @@ public class SimpleScheduler implements Scheduler, TaskRunner {
 	public <T> T execTransaction(Callable<T> transaction, int timeout)
 			throws Exception, ContextException {
 		TransactionManager txm = _txm;
+		
 		if (txm == null) {
 			throw new ContextException(
 					"Cannot locate the transaction manager; the server might be shutting down.");
 		}
-
 		// The value of the timeout is in seconds. If the value is zero, the
 		// transaction service restores the default value.
 		if (timeout < 0) {
 			throw new IllegalArgumentException(
 					"Timeout must be positive, received: " + timeout);
 		}
-
 		boolean existingTransaction = false;
 		try {
 			existingTransaction = txm.getTransaction() != null;
@@ -309,16 +308,13 @@ public class SimpleScheduler implements Scheduler, TaskRunner {
 			String errmsg = "Internal Error, could not get current transaction.";
 			throw new ContextException(errmsg, ex);
 		}
-
 		// already in transaction, execute and return directly
 		if (existingTransaction) {
 			return transaction.call();
 		}
-
 		// run in new transaction
 		Exception ex = null;
 		int immediateRetryCount = _immediateTransactionRetryLimit;
-
 		_txm.setTransactionTimeout(timeout);
 		if (__log.isDebugEnabled() && timeout != 0)
 			__log.debug("Custom transaction timeout: " + timeout);
@@ -352,7 +348,6 @@ public class SimpleScheduler implements Scheduler, TaskRunner {
 							__log.debug("Rollbacking on " + txm + "...");
 						txm.rollback();
 					}
-
 					if (ex != null && immediateRetryCount > 0) {
 						if (__log.isDebugEnabled())
 							__log.debug("Will retry the transaction in "
@@ -366,7 +361,6 @@ public class SimpleScheduler implements Scheduler, TaskRunner {
 			// 0 restores the default value
 			_txm.setTransactionTimeout(0);
 		}
-
 		throw ex;
 	}
 
@@ -594,9 +588,11 @@ public class SimpleScheduler implements Scheduler, TaskRunner {
 
 		public Void call() throws Exception {
 			try {
+				
 				final Scheduler.JobInfo jobInfo = new Scheduler.JobInfo(
 						job.jobId, job.detail, job.detail.getRetryCount());
 				if (job.transacted) {
+	
 					final boolean[] needRetry = new boolean[] { true };
 					try {
 						execTransaction(new Callable<Void>() {
@@ -613,7 +609,8 @@ public class SimpleScheduler implements Scheduler, TaskRunner {
 									// @stmz: job was executed. next one can be
 									// executed.
 									zzbool.setCanRun(true);
-
+									
+									
 									// If the job is a "runnable" job, schedule
 									// the next job
 									// occurence
@@ -727,17 +724,16 @@ public class SimpleScheduler implements Scheduler, TaskRunner {
 		// exists)
 		final Scheduler.JobInfo jobInfo = new Scheduler.JobInfo(job.jobId,
 				job.detail, job.detail.getRetryCount());
-
 		if (!bool) {
 			jobInfo.jobDetail.detailsExt.put("bool", true);
 			jobList.addJobInfo(jobInfo);
-
 			if (job.transacted) {
 				if (job.persisted) {
 					try {
-						if (!_db.deleteJob(job.jobId, _nodeId))
+						if (!_db.deleteJob(job.jobId, _nodeId)) {
 							throw new JobNoLongerInDbException(job.jobId,
 									_nodeId);
+						}
 					} catch (JobNoLongerInDbException jde) {
 						__log.debug("job no longer in db: " + job);
 					} catch (Exception e) {
@@ -745,9 +741,9 @@ public class SimpleScheduler implements Scheduler, TaskRunner {
 					}
 				}
 			}
-
 			_outstandingJobs.remove(job.jobId);
-		} else {
+		}
+		else {
 			_exec.submit(new RunJob(job, _jobProcessor));
 		}
 	}
@@ -891,9 +887,10 @@ public class SimpleScheduler implements Scheduler, TaskRunner {
 		// don't load anything if we're already half-full; we've got plenty to
 		// do
 		// already
-		if (_outstandingJobs.size() > _todoLimit / 2)
+		if (_outstandingJobs.size() > _todoLimit / 2) {
 			return true;
-
+		} 
+		
 		List<Job> jobs;
 		try {
 			// don't load more than we can chew
@@ -955,10 +952,8 @@ public class SimpleScheduler implements Scheduler, TaskRunner {
 
 			// clear only if the batch succeeded
 			_processedSinceLastLoadTask.clear();
-
 			// @hahnml
 			jobList.clearJobListHistory();
-
 			return true;
 		} catch (Exception ex) {
 			__log.error("Error loading immediate jobs from database.", ex);
@@ -990,6 +985,7 @@ public class SimpleScheduler implements Scheduler, TaskRunner {
 				if (__log.isDebugEnabled())
 					__log.debug("Job " + job.jobId
 							+ " is being processed (outstanding job)");
+				ZZBool.getInstance().setCanRun(true);
 			}
 		} else {
 			if (__log.isDebugEnabled())

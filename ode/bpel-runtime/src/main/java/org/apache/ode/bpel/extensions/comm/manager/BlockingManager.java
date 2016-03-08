@@ -18,6 +18,7 @@ import org.apache.ode.bpel.extensions.comm.Communication;
 import org.apache.ode.bpel.extensions.comm.messages.engineIn.RegisterRequestMessage;
 import org.apache.ode.bpel.extensions.comm.messages.engineIn.RegisterRequestMessage.Requested_Blocking_Events;
 import org.apache.ode.bpel.extensions.comm.messages.engineOut.TestConnection;
+import org.apache.ode.bpel.extensions.sync.Constants;
 import org.apache.ode.bpel.o.OExpression;
 import org.w3c.dom.Node;
 
@@ -56,7 +57,9 @@ public class BlockingManager {
 		processes = Collections.synchronizedMap(new HashMap<QName, Boolean>());
 		debuggers = Collections
 				.synchronizedMap(new HashMap<QName, DebuggerSupport>());
-		System.out.println("BlockingManager instantiated.");
+		if (Constants.DEBUG_LEVEL > 0) {
+			System.out.println("BlockingManager instantiated.");
+		}
 	}
 
 	public static BlockingManager getInstance() {
@@ -290,7 +293,6 @@ public class BlockingManager {
 		public Boolean Loop_Iteration_Complete;
 		public Boolean Link_Evaluated;
 		
-		//krawczls: TODO Activity_Ready = true?
 		public Blocking_Events() {
 			Activity_Ready = false;
 			Activity_Executed = false;

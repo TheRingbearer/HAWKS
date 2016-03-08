@@ -50,6 +50,7 @@ import org.apache.ode.bpel.explang.EvaluationException;
 import org.apache.ode.bpel.extension.ExtensionBundleRuntime;
 import org.apache.ode.bpel.extensions.comm.manager.BlockingManager;
 import org.apache.ode.bpel.extensions.handler.IncomingMessageHandler;
+import org.apache.ode.bpel.extensions.sync.Constants;
 import org.apache.ode.bpel.iapi.BpelEngineException;
 import org.apache.ode.bpel.iapi.Endpoint;
 import org.apache.ode.bpel.iapi.EndpointReference;
@@ -246,13 +247,25 @@ public class BpelProcess {
 
 	public void invokeProcess(MyRoleMessageExchangeImpl mex,
 			InvokeHandler invokeHandler) {
+		if (Constants.DEBUG_LEVEL > 1) {
+			System.out.println("BpelProcess - invokeProcess1");
+		}
 		boolean routed = false;
 
 		try {
+			if (Constants.DEBUG_LEVEL > 1) {
+				System.out.println("BpelProcess - invokeProcess2");
+			}
 			_hydrationLatch.latch(1);
 			List<PartnerLinkMyRoleImpl> targets = getMyRolesForService(mex
 					.getServiceName());
+			if (Constants.DEBUG_LEVEL > 1) {
+				System.out.println("BpelProcess - invokeProcess3");
+			}
 			if (targets.isEmpty()) {
+				if (Constants.DEBUG_LEVEL > 1) {
+					System.out.println("BpelProcess - invokeProcess4");
+				}
 				String errmsg = __msgs.msgMyRoleRoutingFailure(mex
 						.getMessageExchangeId());
 				__log.error(errmsg);
@@ -260,40 +273,78 @@ public class BpelProcess {
 						errmsg, null);
 				return;
 			}
-
+			if (Constants.DEBUG_LEVEL > 1) {
+				System.out.println("BpelProcess - invokeProcess5");
+			}
 			mex.getDAO().setProcess(getProcessDAO());
-
+			if (Constants.DEBUG_LEVEL > 1) {
+				System.out.println("BpelProcess - invokeProcess6");
+			}
 			if (!processInterceptors(mex, InterceptorInvoker.__onProcessInvoked)) {
+				if (Constants.DEBUG_LEVEL > 1) {
+					System.out.println("BpelProcess - invokeProcess7");
+				}
 				__log.debug("Aborting processing of mex " + mex
 						+ " due to interceptors.");
 				return;
 			}
-
+			if (Constants.DEBUG_LEVEL > 1) {
+				System.out.println("BpelProcess - invokeProcess8");
+			}
 			markused();
-
+			if (Constants.DEBUG_LEVEL > 1) {
+				System.out.println("BpelProcess - invokeProcess9");
+			}
 			// Ideally, if Java supported closure, the routing code would return
 			// null
 			// or the appropriate
 			// closure to handle the route.
 			List<PartnerLinkMyRoleImpl.RoutingInfo> routings = null;
 			for (PartnerLinkMyRoleImpl target : targets) {
+				if (Constants.DEBUG_LEVEL > 1) {
+					System.out.println("BpelProcess - invokeProcess10");
+				}
 				routings = target.findRoute(mex);
 				boolean createInstance = target.isCreateInstance(mex);
-
+				if (Constants.DEBUG_LEVEL > 1) {
+					System.out.println("BpelProcess - invokeProcess11");
+				}
 				if (mex.getStatus() != MessageExchange.Status.FAILURE) {
+					if (Constants.DEBUG_LEVEL > 1) {
+						System.out.println("BpelProcess - invokeProcess12");
+					}
 					for (PartnerLinkMyRoleImpl.RoutingInfo routing : routings) {
+						if(routing != null) {
+							if(routing.messageRoute != null
+									&& Constants.DEBUG_LEVEL > 0) {
+								System.out.println("BpelProcess - invokeProcess12.5 " + routing.messageRoute.getRoute());
+							}
+						}
+						else {
+							if (Constants.DEBUG_LEVEL > 1) {
+								System.out.println("BpelProcess - invokeProcess12.5 ");
+							}
+						}
 						routed = routed
 								|| invokeHandler.invoke(target, routing,
 										createInstance);
 					}
 				}
 				if (routed) {
+					if (Constants.DEBUG_LEVEL > 1) {
+						System.out.println("BpelProcess - invokeProcess13");
+					}
 					break;
 				}
 			}
-
+			if (Constants.DEBUG_LEVEL > 1) {
+				System.out.println("BpelProcess - invokeProcess14");
+			}
 			// Nothing found, saving for later
 			if (!routed) {
+				if (Constants.DEBUG_LEVEL > 1) {
+					System.out.println("BpelProcess - invokeProcess15");
+				}
 				// TODO this is kind of hackish when no match and more than one
 				// myrole
 				// is selected.
@@ -303,6 +354,9 @@ public class BpelProcess {
 				// of the correlator
 				targets.get(targets.size() - 1).noRoutingMatch(mex, routings);
 			} else {
+				if (Constants.DEBUG_LEVEL > 1) {
+					System.out.println("BpelProcess - invokeProcess16");
+				}
 				// Now we have to update our message exchange status. If the
 				// <reply> was
 				// not hit during the
@@ -311,12 +365,20 @@ public class BpelProcess {
 				// either this was a one-way
 				// or a two-way that needs to delivery the reply asynchronously.
 				if (mex.getStatus() == MessageExchange.Status.REQUEST) {
+					if (Constants.DEBUG_LEVEL > 1) {
+						System.out.println("BpelProcess - invokeProcess17");
+					}
 					mex.setStatus(MessageExchange.Status.ASYNC);
 				}
-
+				if (Constants.DEBUG_LEVEL > 1) {
+					System.out.println("BpelProcess - invokeProcess18");
+				}
 				markused();
 			}
 		} finally {
+			if (Constants.DEBUG_LEVEL > 1) {
+				System.out.println("BpelProcess - invokeProcess19");
+			}
 			_hydrationLatch.release(1);
 		}
 
@@ -328,7 +390,13 @@ public class BpelProcess {
 				&& routed
 				&& getCleanupCategories(false).contains(
 						CLEANUP_CATEGORY.MESSAGES)) {
+			if (Constants.DEBUG_LEVEL > 1) {
+				System.out.println("BpelProcess - invokeProcess20");
+			}
 			mex.release();
+		}
+		if (Constants.DEBUG_LEVEL > 1) {
+			System.out.println("BpelProcess - invokeProcess21");
 		}
 	}
 
@@ -342,16 +410,29 @@ public class BpelProcess {
 			public boolean invoke(PartnerLinkMyRoleImpl target,
 					PartnerLinkMyRoleImpl.RoutingInfo routing,
 					boolean createInstance) {
+				if (Constants.DEBUG_LEVEL > 1) {
+					System.out.println("BpelProcess - InnvokeHandler1");
+				}
 				if (routing.messageRoute == null && createInstance) {
+					if (Constants.DEBUG_LEVEL > 1) {
+						System.out.println("BpelProcess - InnvokeHandler2");
+					}
 					// No route but we can create a new instance
 					target.invokeNewInstance(mex, routing);
 					return true;
 				} else if (routing.messageRoute != null) {
 					// Found a route, hitting it
+					if (Constants.DEBUG_LEVEL > 1) {
+						System.out.println("BpelProcess - Aquiring lock for " + routing.messageRoute
+								.getTargetInstance().getInstanceId());
+					}
 					_engine.acquireInstanceLock(routing.messageRoute
 							.getTargetInstance().getInstanceId());
 					target.invokeInstance(mex, routing);
 					return true;
+				}
+				if (Constants.DEBUG_LEVEL > 1) {
+					System.out.println("BpelProcess - InnvokeHandler3");
 				}
 				return false;
 			}
@@ -497,10 +578,18 @@ public class BpelProcess {
 	 */
 	public void handleJobDetails(JobDetails jobData) {
 		JobDetails we = jobData;
-
+		if (Constants.DEBUG_LEVEL > 1) {
+			System.out.println("BpelProcess - handleJobDetails1 " + jobData);
+		}
 		try {
 			_hydrationLatch.latch(1);
+			if (Constants.DEBUG_LEVEL > 1) {
+				System.out.println("BpelProcess - handleJobDetails2 " + jobData);
+			}
 			markused();
+			if (Constants.DEBUG_LEVEL > 1) {
+				System.out.println("BpelProcess - handleJobDetails3 " + jobData);
+			}
 			if (__log.isDebugEnabled()) {
 				__log.debug(ObjectPrinter
 						.stringifyMethodEnter("handleJobDetails", new Object[] {
@@ -509,6 +598,9 @@ public class BpelProcess {
 
 			// Process level events
 			if (we.getType().equals(JobType.INVOKE_INTERNAL)) {
+				if (Constants.DEBUG_LEVEL > 1) {
+					System.out.println("BpelProcess - handleJobDetails4 " + jobData);
+				}
 				if (__log.isDebugEnabled()) {
 					__log.debug("InvokeInternal event for mexid "
 							+ we.getMexId());
@@ -517,6 +609,9 @@ public class BpelProcess {
 						.getMessageExchange(we.getMexId());
 				invokeProcess(mex);
 			} else {
+				if (Constants.DEBUG_LEVEL > 1) {
+					System.out.println("BpelProcess - handleJobDetails5 " + jobData);
+				}
 				// Instance level events
 				ProcessInstanceDAO procInstance = getProcessDAO().getInstance(
 						we.getInstanceId());
@@ -527,14 +622,21 @@ public class BpelProcess {
 					}
 					return;
 				}
-
+				if (Constants.DEBUG_LEVEL > 1) {
+					System.out.println("BpelProcess - handleJobDetails6 " + jobData);
+				}
 				switch (we.getType()) {
 				case TIMER:
+					if (Constants.DEBUG_LEVEL > 1) {
+						System.out.println("BpelProcess - TIMER 1 " + jobData);
+					}
 					// @hahnml: Check if the timer has to be ignored for
 					// iteration
 					String xPath = (String) we.getDetailsExt().get(
 							JobDetails.TARGET_ACTIVITY_XPATH);
-
+					if (Constants.DEBUG_LEVEL > 1) {
+						System.out.println("BpelProcess - TIMER 2 " + jobData);
+					}
 					if (xPath == null
 							|| !_timerToIgnoreForIteration.contains(xPath)) {
 						if (__log.isDebugEnabled()) {
@@ -555,8 +657,14 @@ public class BpelProcess {
 							_timerToIgnoreForIteration.remove(xPath);
 						}
 					}
+					if (Constants.DEBUG_LEVEL > 1) {
+						System.out.println("BpelProcess - TIMER 3 " + jobData);
+					}
 					break;
 				case TIMER2:
+					if (Constants.DEBUG_LEVEL > 1) {
+						System.out.println("BpelProcess - TIMER2 1 " + jobData);
+					}
 					if (__log.isDebugEnabled()) {
 						__log.debug("handleWorkEvent: TimerWork event for process instance "
 								+ we.getInstanceId());
@@ -564,9 +672,15 @@ public class BpelProcess {
 					BpelRuntimeContextImpl processInstanceX = createRuntimeContext(
 							procInstance, null, null);
 					processInstanceX.timerEvent2();
+					if (Constants.DEBUG_LEVEL > 1) {
+						System.out.println("BpelProcess - TIMER2 2 " + jobData);
+					}
 					break;
 				// schlieta
 				case FINISH:
+					if (Constants.DEBUG_LEVEL > 1) {
+						System.out.println("BpelProcess - FINISH 1 " + jobData);
+					}
 					if (__log.isDebugEnabled()) {
 						__log.debug("handleWorkEvent: ResumeWork (and let it finish) event for iid "
 								+ we.getInstanceId());
@@ -581,9 +695,15 @@ public class BpelProcess {
 							procInstance, null, null);
 
 					processInstance2.execute();
+					if (Constants.DEBUG_LEVEL > 1) {
+						System.out.println("BpelProcess - FINISH 2 " + jobData);
+					}
 					break;
 				// end schlieta
 				case RESUME:
+					if (Constants.DEBUG_LEVEL > 1) {
+						System.out.println("BpelProcess - RESUME 1 " + jobData);
+					}
 					if (__log.isDebugEnabled()) {
 						__log.debug("handleWorkEvent: ResumeWork event for iid "
 								+ we.getInstanceId());
@@ -603,9 +723,15 @@ public class BpelProcess {
 					}
 
 					processInstance3.execute();
+					if (Constants.DEBUG_LEVEL > 1) {
+						System.out.println("BpelProcess - RESUME 2 " + jobData);
+					}
 					break;
 				// added by Bo Ning
 				case ITERATE:
+					if (Constants.DEBUG_LEVEL > 1) {
+						System.out.println("BpelProcess - ITERATE 1 " + jobData);
+					}
 					if (__log.isDebugEnabled()) {
 						__log.debug("handleWorkEvent: IterateWork event for iid "
 								+ we.getInstanceId());
@@ -614,7 +740,9 @@ public class BpelProcess {
 							procInstance, null, null);
 
 					_timerToIgnoreForIteration.clear();
-
+					if (Constants.DEBUG_LEVEL > 1) {
+						System.out.println("BpelProcess - ITERATE 2 " + jobData);
+					}
 					// Create the new sequence
 					if (processInstance4._soup.hasReactions()) {
 
@@ -660,10 +788,15 @@ public class BpelProcess {
 						__log.debug("handleWorkEvent: IterateWork event for iid, but there is nothing to iterate "
 								+ we.getInstanceId());
 					}
-
+					if (Constants.DEBUG_LEVEL > 1) {
+						System.out.println("BpelProcess - ITERATE 3 " + jobData);
+					}
 					break;
 				// added by hahnml
 				case JUMPTOACTIVITY:
+					if (Constants.DEBUG_LEVEL > 1) {
+						System.out.println("BpelProcess - JUMPTOACTIVITY 1 " + jobData);
+					}
 					if (__log.isDebugEnabled()) {
 						__log.debug("handleWorkEvent: JumpToWork event for iid "
 								+ we.getInstanceId());
@@ -672,7 +805,9 @@ public class BpelProcess {
 							procInstance, null, null);
 
 					_timerToIgnoreForIteration.clear();
-
+					if (Constants.DEBUG_LEVEL > 1) {
+						System.out.println("BpelProcess - JUMPTOACTIVITY 2 " + jobData);
+					}
 					// Create the new sequence
 					if (processInstance5._soup.hasReactions()) {
 
@@ -709,10 +844,15 @@ public class BpelProcess {
 						__log.debug("handleWorkEvent: JumpToWork event for iid, but there is nothing to jump to. InstanceId: "
 								+ we.getInstanceId());
 					}
-
+					if (Constants.DEBUG_LEVEL > 1) {
+						System.out.println("BpelProcess - JUMPTOACTIVITY 3 " + jobData);
+					}
 					break;
 				// added by Bo Ning
 				case REEXECUTE:
+					if (Constants.DEBUG_LEVEL > 1) {
+						System.out.println("BpelProcess - REEXECUTE 1 " + jobData);
+					}
 					if (__log.isDebugEnabled()) {
 						__log.debug("handleWorkEvent: ReexecuteWork event for iid "
 								+ we.getInstanceId());
@@ -721,7 +861,9 @@ public class BpelProcess {
 							procInstance, null, null);
 
 					_timerToIgnoreForIteration.clear();
-
+					if (Constants.DEBUG_LEVEL > 1) {
+						System.out.println("BpelProcess - REEXECUTE 2 " + jobData);
+					}
 					// Create the new sequence
 					if (processInstance6._soup.hasReactions()) {
 
@@ -775,9 +917,14 @@ public class BpelProcess {
 						__log.debug("handleWorkEvent: ReexecuteWork event for iid, but there is nothing to reexecute "
 								+ we.getInstanceId());
 					}
-
+					if (Constants.DEBUG_LEVEL > 1) {
+						System.out.println("BpelProcess - REEXECUTE 3 " + jobData);
+					}
 					break;
 				case INVOKE_RESPONSE:
+					if (Constants.DEBUG_LEVEL > 1) {
+						System.out.println("BpelProcess - INVOKE_RESPONSE 1 " + jobData);
+					}
 					if (__log.isDebugEnabled()) {
 						__log.debug("InvokeResponse event for iid "
 								+ we.getInstanceId());
@@ -787,8 +934,14 @@ public class BpelProcess {
 					processInstance7.invocationResponse(we.getMexId(),
 							we.getChannel());
 					processInstance7.execute();
+					if (Constants.DEBUG_LEVEL > 1) {
+						System.out.println("BpelProcess - INVOKE_RESPONSE 2 " + jobData);
+					}
 					break;
 				case MATCHER:
+					if (Constants.DEBUG_LEVEL > 1) {
+						System.out.println("BpelProcess - MATCHER 1 " + jobData);
+					}
 					if (__log.isDebugEnabled()) {
 						__log.debug("Matcher event for iid "
 								+ we.getInstanceId());
@@ -802,18 +955,33 @@ public class BpelProcess {
 							procInstance, null, null);
 					processInstance8.matcherEvent(we.getCorrelatorId(),
 							we.getCorrelationKeySet());
+					if (Constants.DEBUG_LEVEL > 1) {
+						System.out.println("BpelProcess - MATCHER 2 " + jobData);
+					}
 					// AH:
 					break;
 				case INVOKE_FC:
+					if (Constants.DEBUG_LEVEL > 1) {
+						System.out.println("BpelProcess - INVOKE_FC 1 " + jobData);
+					}
 					MyRoleMessageExchangeImpl mex = (MyRoleMessageExchangeImpl) _engine
 							.getMessageExchange(we.getMexId());
 					this.getEngine().getFragmentCompositionEventBroker()
 							.process(this, procInstance, mex);
+					if (Constants.DEBUG_LEVEL > 1) {
+						System.out.println("BpelProcess - INVOKE_FC 2 " + jobData);
+					}
 					// AH: end
 				}
 			}
 		} finally {
+			if (Constants.DEBUG_LEVEL > 1) {
+				System.out.println("BpelProcess - handleJobDetails7 " + jobData);
+			}
 			_hydrationLatch.release(1);
+			if (Constants.DEBUG_LEVEL > 1) {
+				System.out.println("BpelProcess - handleJobDetails8 " + jobData);
+			}
 		}
 	}
 

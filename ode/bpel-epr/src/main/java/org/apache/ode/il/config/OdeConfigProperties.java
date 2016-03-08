@@ -333,10 +333,11 @@ public class OdeConfigProperties {
 	public String getMessageExchangeInterceptors() {
 		return getProperty(PROP_MEX_INTERCEPTORS);
 	}
-
+	
+	//TODO krawczls: change back to normal value (10*60*1000) and change in config file
 	public long getInMemMexTtl() {
 		return Long
-				.valueOf(getProperty(PROP_MEX_INMEM_TTL, "" + 10 * 60 * 1000));
+				.valueOf(getProperty(PROP_MEX_INMEM_TTL, "" + 1000 * 60 * 1000));
 	}
 
 	public boolean isDehydrationEnabled() {

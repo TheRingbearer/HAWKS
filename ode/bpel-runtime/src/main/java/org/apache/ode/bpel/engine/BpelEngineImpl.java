@@ -43,6 +43,7 @@ import org.apache.ode.bpel.dao.ProcessDAO;
 import org.apache.ode.bpel.dao.ProcessInstanceDAO;
 import org.apache.ode.bpel.engine.fc.DeploymentUnitNameGenerator;
 import org.apache.ode.bpel.evt.BpelEvent;
+import org.apache.ode.bpel.extensions.sync.Constants;
 import org.apache.ode.bpel.iapi.BpelEngine;
 import org.apache.ode.bpel.iapi.BpelEngineException;
 import org.apache.ode.bpel.iapi.ContextException;
@@ -178,6 +179,30 @@ public class BpelEngineImpl implements BpelEngine {
 		public void run() {
 			if (zzbool.getCanRun()) {
 				zzbool.setCanRun(false);
+				//trying to test if this gets triggered after the deadlock
+				/*Thread thread = new Thread(){
+					public void run(){
+						Object o = new Object();
+						int i = 0;
+						while (!zzbool.getCanRun() && i++ < 2000) {
+							synchronized(o) {
+								try {
+									o.wait(10);
+								} catch (InterruptedException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								}
+							}
+						}
+						if (i >= 2000) {
+							zzbool.setCanRun(true);
+							System.out.println("Forced Release of the lock");
+						}
+					}
+				};
+
+				thread.start();*/
+				
 				final Scheduler.JobInfo info = jobList.getJobInfo();
 				final Scheduler scheduler = _contexts.scheduler;
 				if (info != null) {
@@ -188,12 +213,18 @@ public class BpelEngineImpl implements BpelEngine {
 
 								scheduler.scheduleVolatileJob(true,
 										info.jobDetail);
+								//TODO did break
+								zzbool.setCanRun(true);
 								return null;
 							}
 						});
 					} catch (ContextException e) {
+//						no impact
+						zzbool.setCanRun(true);
 						System.out.println(e);
 					} catch (Exception e) {
+//						no impact
+						zzbool.setCanRun(true);
 						System.out.println(e);
 					}
 
@@ -553,29 +584,50 @@ public class BpelEngineImpl implements BpelEngine {
 	}
 
 	public void acquireInstanceLock(final Long iid) {
+		//TODO could break
+		//@krawczls: Testing if this avoids the deadlock problem
+		//return;
 		// We lock the instance to prevent concurrent transactions and prevent
 		// unnecessary rollbacks,
 		// Note that we don't want to wait too long here to get our lock, since
 		// we
 		// are likely holding
 		// on to scheduler's locks of various sorts.
+		if (Constants.DEBUG_LEVEL > 1) {
+			System.out.println("BpelEngineImpl - AquireInstanceLock" + iid);
+		}
 		try {
+			System.out.println("BpelEngineImpl - AquireInstanceLock1");
 			_instanceLockManager.lock(iid, 1, TimeUnit.MICROSECONDS);
 			_contexts.scheduler
 					.registerSynchronizer(new Scheduler.Synchronizer() {
 						public void afterCompletion(boolean success) {
+							if (Constants.DEBUG_LEVEL > 1) {
+								System.out.println("BpelEngineImpl - unlock1" + iid);
+							}
 							_instanceLockManager.unlock(iid);
+							if (Constants.DEBUG_LEVEL > 1) {
+								System.out.println("BpelEngineImpl - unlock2" + iid);
+							}
 						}
 
 						public void beforeCompletion() {
 						}
 					});
 		} catch (InterruptedException e) {
+			if (Constants.DEBUG_LEVEL > 1) {
+				System.out.println("BpelEngineImpl - AquireInstanceLock2:Catched Exception1");
+			}
+			e.printStackTrace();
 			// Retry later.
 			__log.debug("Thread interrupted, job will be rescheduled");
 			zzbool.setRunning(false);
 			throw new Scheduler.JobProcessorException(true);
 		} catch (org.apache.ode.bpel.engine.InstanceLockManager.TimeoutException e) {
+			if (Constants.DEBUG_LEVEL > 1) {
+				System.out.println("BpelEngineImpl - AquireInstanceLock2:Catched Exception2");
+			}
+			e.printStackTrace();
 			__log.debug("Instance " + iid + " is busy, rescheduling job.");
 			zzbool.setRunning(false);
 			throw new Scheduler.JobProcessorException(true);
@@ -584,7 +636,13 @@ public class BpelEngineImpl implements BpelEngine {
 
 	public void onScheduledJob(Scheduler.JobInfo jobInfo)
 			throws Scheduler.JobProcessorException {
+		if (Constants.DEBUG_LEVEL > 1) {
+			System.out.println("BpelEngineImpl - " + jobInfo.jobDetail.instanceId);
+		}
 		final JobDetails we = jobInfo.jobDetail;
+		if (Constants.DEBUG_LEVEL > 1) {
+			System.out.println("BpelEngineImpl - 1");
+		}
 
 		/*
 		 * if (!we.getBool()) { we.setBool(true); addJobInfo(jobInfo); return; }
@@ -598,9 +656,14 @@ public class BpelEngineImpl implements BpelEngine {
 		if (__log.isTraceEnabled())
 			__log.trace("[JOB] onScheduledJob " + jobInfo + ""
 					+ we.getInstanceId());
-
+		
+		if (Constants.DEBUG_LEVEL > 1) {
+			System.out.println("BpelEngineImpl - 2");
+		}
 		acquireInstanceLock(we.getInstanceId());
-
+		if (Constants.DEBUG_LEVEL > 1) {
+			System.out.println("BpelEngineImpl - 2.5");
+		}
 		// DONT PUT CODE HERE-need this method real tight in a try/catch block,
 		// we
 		// need to handle
@@ -612,8 +675,14 @@ public class BpelEngineImpl implements BpelEngine {
 		BpelProcess process = null;
 		try {
 			if (we.getProcessId() != null) {
+				if (Constants.DEBUG_LEVEL > 1) {
+					System.out.println("BpelEngineImpl - 3");
+				}
 				process = _activeProcesses.get(we.getProcessId());
 			} else {
+				if (Constants.DEBUG_LEVEL > 1) {
+					System.out.println("BpelEngineImpl - 4");
+				}
 				ProcessInstanceDAO instance;
 				if (we.getInMem())
 					instance = _contexts.inMemDao.getConnection().getInstance(
@@ -621,8 +690,13 @@ public class BpelEngineImpl implements BpelEngine {
 				else
 					instance = _contexts.dao.getConnection().getInstance(
 							we.getInstanceId());
-
+				if (Constants.DEBUG_LEVEL > 1) {
+					System.out.println("BpelEngineImpl - 5");
+				}
 				if (instance == null) {
+					if (Constants.DEBUG_LEVEL > 1) {
+						System.out.println("BpelEngineImpl - 6");
+					}
 					__log.debug(__msgs
 							.msgScheduledJobReferencesUnknownInstance(we
 									.getInstanceId()));
@@ -634,24 +708,47 @@ public class BpelEngineImpl implements BpelEngine {
 					zzbool.setRunning(false);
 					return;
 				}
+				if (Constants.DEBUG_LEVEL > 1) {
+					System.out.println("BpelEngineImpl - 7");
+				}
 				ProcessDAO processDao = instance.getProcess();
 				process = _activeProcesses.get(processDao.getProcessId());
+				if (Constants.DEBUG_LEVEL > 1) {
+					System.out.println("BpelEngineImpl - 8");
+				}
 			}
-
+			if (Constants.DEBUG_LEVEL > 1) {
+				System.out.println("BpelEngineImpl - 8.5");
+			}
 			if (process == null) {
 				// The process is not active, there's nothing we can do with
 				// this job
+				if (Constants.DEBUG_LEVEL > 1) {
+					System.out.println("BpelEngineImpl - 9");
+				}
 				__log.debug("Process " + we.getProcessId()
 						+ " can't be found, job abandoned.");
+				if (Constants.DEBUG_LEVEL > 1) {
+					System.out.println("Process " + we.getProcessId()
+						+ " can't be found, job abandoned.");
+				}
 				zzbool.setRunning(false);
 				return;
 			}
-
+			if (Constants.DEBUG_LEVEL > 1) {
+				System.out.println("BpelEngineImpl - 10");
+			}
 			ClassLoader cl = Thread.currentThread().getContextClassLoader();
 			try {
+				if (Constants.DEBUG_LEVEL > 1) {
+					System.out.println("BpelEngineImpl - 11");
+				}
 				Thread.currentThread().setContextClassLoader(
 						process._classLoader);
 				if (we.getType().equals(JobType.INVOKE_CHECK)) {
+					if (Constants.DEBUG_LEVEL > 1) {
+						System.out.println("BpelEngineImpl - 12");
+					}
 					if (__log.isDebugEnabled())
 						__log.debug("handleJobDetails: InvokeCheck event for mexid "
 								+ we.getMexId());
@@ -663,6 +760,9 @@ public class BpelEngineImpl implements BpelEngine {
 					zzbool.setRunning(false);
 					return;
 				} else if (we.getType().equals(JobType.INVOKE_INTERNAL)) {
+					if (Constants.DEBUG_LEVEL > 1) {
+						System.out.println("BpelEngineImpl - 13");
+					}
 					if (__log.isDebugEnabled())
 						__log.debug("handleJobDetails: InvokeInternal event for mexid "
 								+ we.getMexId());
@@ -695,34 +795,64 @@ public class BpelEngineImpl implements BpelEngine {
 						}
 					}
 				}
+				if (Constants.DEBUG_LEVEL > 1) {
+					System.out.println("BpelEngineImpl - 14");
+				}
 				process.handleJobDetails(jobInfo.jobDetail);
+				if (Constants.DEBUG_LEVEL > 1) {
+					System.out.println("BpelEngineImpl - 15");
+				}
 				debuggingDelay();
+				if (Constants.DEBUG_LEVEL > 1) {
+					System.out.println("BpelEngineImpl - 16");
+				}
 			} finally {
+				if (Constants.DEBUG_LEVEL > 1) {
+					System.out.println("BpelEngineImpl - 17");
+				}
 				// @hahnml: CHECK if this is the right position for this
 				// statement
 				zzbool.setRunning(false);
 				Thread.currentThread().setContextClassLoader(cl);
 			}
 		} catch (Scheduler.JobProcessorException e) {
+			if (Constants.DEBUG_LEVEL > 1) {
+				System.out.println("BpelEngineImpl - 16");
+			}
 			zzbool.setRunning(false);
 			throw e;
 		} catch (BpelEngineException bee) {
+			if (Constants.DEBUG_LEVEL > 1) {
+				System.out.println("BpelEngineImpl - 17");
+			}
 			zzbool.setRunning(false);
 			__log.error(__msgs.msgScheduledJobFailed(we), bee);
 			throw new Scheduler.JobProcessorException(bee, checkRetry(we));
 		} catch (ContextException ce) {
+			if (Constants.DEBUG_LEVEL > 1) {
+				System.out.println("BpelEngineImpl - 18");
+			}
 			zzbool.setRunning(false);
 			__log.error(__msgs.msgScheduledJobFailed(we), ce);
 			throw new Scheduler.JobProcessorException(ce, checkRetry(we));
 		} catch (InvalidProcessException ipe) {
+			if (Constants.DEBUG_LEVEL > 1) {
+				System.out.println("BpelEngineImpl - 19");
+			}
 			zzbool.setRunning(false);
 			__log.error(__msgs.msgScheduledJobFailed(we), ipe);
 			sendMyRoleFault(process, we, ipe.getCauseCode());
 		} catch (RuntimeException rte) {
+			if (Constants.DEBUG_LEVEL > 1) {
+				System.out.println("BpelEngineImpl - 20");
+			}
 			zzbool.setRunning(false);
 			__log.error(__msgs.msgScheduledJobFailed(we), rte);
 			throw new Scheduler.JobProcessorException(rte, checkRetry(we));
 		} catch (Throwable t) {
+			if (Constants.DEBUG_LEVEL > 1) {
+				System.out.println("BpelEngineImpl - 21");
+			}
 			zzbool.setRunning(false);
 			__log.error(__msgs.msgScheduledJobFailed(we), t);
 			throw new Scheduler.JobProcessorException(t, checkRetry(we));

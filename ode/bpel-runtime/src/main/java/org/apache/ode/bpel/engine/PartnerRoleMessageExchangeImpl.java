@@ -23,6 +23,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.ode.bpel.dao.MessageExchangeDAO;
 import org.apache.ode.bpel.engine.replayer.Replayer;
+import org.apache.ode.bpel.extensions.sync.Constants;
 import org.apache.ode.bpel.iapi.BpelEngineException;
 import org.apache.ode.bpel.iapi.EndpointReference;
 import org.apache.ode.bpel.iapi.Message;
@@ -142,6 +143,9 @@ public class PartnerRoleMessageExchangeImpl extends MessageExchangeImpl
 			LOG.debug("create work event for mex=" + getMessageExchangeId());
 		}
 		JobDetails we = new JobDetails();
+		if (Constants.DEBUG_LEVEL > 0) {
+			System.out.println("PartnerRoleMessageExchangeImpl - instanceID: " +  getDAO().getInstance().getInstanceId());
+		}
 		we.setInstanceId(getDAO().getInstance().getInstanceId());
 		we.setType(JobType.INVOKE_RESPONSE);
 		we.setInMem(_engine._activeProcesses.get(

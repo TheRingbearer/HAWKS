@@ -31,6 +31,7 @@ import org.apache.ode.bpel.extensions.comm.messages.engineOut.Variable_Modificat
 import org.apache.ode.bpel.extensions.comm.messages.engineOut.Variable_Modification_At_Assign;
 import org.apache.ode.bpel.extensions.handler.IncomingMessageHandler;
 import org.apache.ode.bpel.extensions.handler.InstanceEventHandler;
+import org.apache.ode.bpel.extensions.sync.Constants;
 
 //@stmz: establishes a JMS Connection. Uses outbound topic for event publishing and an 
 //inbound queue for receiving messages
@@ -60,7 +61,9 @@ public class Communication implements IConstants {
 	private Communication() {
 		initialized = false;
 
-		System.out.println("Communication instantiated.");
+		if (Constants.DEBUG_LEVEL > 0) {
+			System.out.println("Communication instantiated.");
+		}
 	}
 	
 	public void startup(String activeMQURL) {
@@ -89,15 +92,11 @@ public class Communication implements IConstants {
 			InetAddress inetAddress = InetAddress.getLocalHost();
 			odeHostIP = inetAddress.getHostAddress();
 		} catch (JMSException e) {
-			System.out.println("");
-			System.out.println("Initialization of JMS-Connection failed.");
-			System.out.println(e);
-			System.out.println("");
+			System.out.println("\nInitialization of JMS-Connection failed.");
+			System.out.println(e + "\n");
 		} catch (UnknownHostException e) {
-			System.out.println("");
-			System.out.println("Initialization of JMS-Connection failed.");
-			System.out.println(e);
-			System.out.println("");
+			System.out.println("\nInitialization of JMS-Connection failed.");
+			System.out.println(e + "\n");
 		}
 	}
 
@@ -115,9 +114,9 @@ public class Communication implements IConstants {
 				inConnection = null;
 			}
 			initialized = false;
-			System.out.println("");
-			System.out.println("JMS Connection shutdown.");
-			System.out.println("");
+			if (Constants.DEBUG_LEVEL > 0) {
+				System.out.println("\nJMS Connection shutdown.\n");
+			}
 		} catch (JMSException e) {
 			System.out.println(e);
 			initialized = false;
@@ -241,15 +240,11 @@ public class Communication implements IConstants {
 				aObjectMessage.setObject(aObject);
 				outPublisher.send(aObjectMessage);
 			} catch (JMSException e) {
-				System.out.println("");
-				System.out.println("Message could not be send to Topic.");
-				System.out.println(e);
-				System.out.println("");
+				System.out.println("\nMessage could not be send to Topic.");
+				System.out.println(e + "\n");
 			} catch (Exception e) {
-				System.out.println("");
-				System.out.println("Exception while sending message to Topic.");
-				System.out.println(e);
-				System.out.println("");
+				System.out.println("\nException while sending message to Topic.");
+				System.out.println(e + "\n");
 			}
 		}
 	}
@@ -276,20 +271,14 @@ public class Communication implements IConstants {
 				tempConnection.stop();
 				tempConnection.close();
 			} catch (JMSException e) {
-				System.out.println("");
-				System.out
-						.println("invalid destination ==> controller removed.");
-				System.out.println(e);
-				System.out.println("");
+				System.out.println("\ninvalid destination ==> controller removed.");
+				System.out.println(e + "\n");
 				IncomingMessageHandler incMess = IncomingMessageHandler
 						.getInstance();
 				incMess.unregister(aDestination);
 			} catch (Exception e) {
-				System.out.println("");
-				System.out
-						.println("Exception while sending message to given Destination.");
-				System.out.println(e);
-				System.out.println("");
+				System.out.println("\nException while sending message to given Destination.");
+				System.out.println(e + "\n");
 			}
 		}
 	}

@@ -46,6 +46,7 @@ import org.apache.ode.bpel.evar.ExternalVariableModule;
 import org.apache.ode.bpel.evt.BpelEvent;
 import org.apache.ode.bpel.extension.ExtensionBundleRuntime;
 import org.apache.ode.bpel.extensions.listener.BpelEventListenerImpl;
+import org.apache.ode.bpel.extensions.sync.Constants;
 import org.apache.ode.bpel.iapi.BindingContext;
 import org.apache.ode.bpel.iapi.BpelEngine;
 import org.apache.ode.bpel.iapi.BpelEngineException;
@@ -545,6 +546,9 @@ public class BpelServerImpl implements BpelServer, ProcessRegistry,
 	}
 
 	public void onScheduledJob(JobInfo jobInfo) throws JobProcessorException {
+		if (Constants.DEBUG_LEVEL > 1) {
+			System.out.println("BpelServerImpl - onScheduledJob" + jobInfo.jobDetail.instanceId);
+		}
 		getEngine().onScheduledJob(jobInfo);
 	}
 
