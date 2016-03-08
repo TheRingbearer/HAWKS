@@ -294,6 +294,7 @@ public class ReplicationStartContext {
                     
                     emptyLogFile();
                     getHeartbeatRateAndTimeout();
+                    System.out.println("This is the timeout: " + timeout);
                     readRoundRobinConfig();
                     readFailureConfig();
                  
@@ -313,7 +314,7 @@ public class ReplicationStartContext {
 	                    while (x) {
 	                    	long curTime = (new Date()).getTime();
 	                    	if(curTime - time >= 10000) {
-	                    		currentFail = currentFail+10;
+	                    		currentFail = currentFail+5;
 	                    		time = curTime;
 	                    	}
 	                        this.wait(1000);
