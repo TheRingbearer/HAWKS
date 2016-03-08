@@ -20,6 +20,7 @@ package org.apache.ode.bpel.engine;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.ode.bpel.extensions.sync.Constants;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -46,75 +47,167 @@ public class InstanceLockManager {
 
 	public void lock(Long iid, int time, TimeUnit tu)
 			throws InterruptedException, TimeoutException {
-		if (iid == null)
+		if (Constants.DEBUG_LEVEL > 1) {
+			System.out.println("InstanceLockManager - lock1 " + iid + " " + time + " " + tu);
+		}
+		if (iid == null) {
+			if (Constants.DEBUG_LEVEL > 1) {
+				System.out.println("InstanceLockManager - lock2 " + iid + " " + time + " " + tu);
+			}
 			return;
-
+		}
+		if (Constants.DEBUG_LEVEL > 1) {
+			System.out.println("InstanceLockManager - lock3 " + iid + " " + time + " " + tu);
+		}
 		String thrd = Thread.currentThread().toString();
+		if (Constants.DEBUG_LEVEL > 1) {
+			System.out.println("InstanceLockManager - lock4 " + iid + " " + time + " " + tu);
+		}
 		if (__log.isDebugEnabled())
 			__log.debug(thrd + ": lock(iid=" + iid + ", time=" + time + tu
 					+ ")");
 
 		InstanceInfo li;
-
+		
+		
+		if (Constants.DEBUG_LEVEL > 1) {
+			System.out.println("InstanceLockManager - lock5 " + iid + " " + time + " " + tu);
+		}
 		_mutex.lock();
+		if (Constants.DEBUG_LEVEL > 1) {
+			System.out.println("InstanceLockManager - lock6 " + iid + " " + time + " " + tu);
+		}
 		try {
-
+			if (Constants.DEBUG_LEVEL > 1) {
+				System.out.println("InstanceLockManager - lock7 " + iid + " " + time + " " + tu);
+			}
 			while (true) {
+				if (Constants.DEBUG_LEVEL > 1) {
+					System.out.println("InstanceLockManager - lock8 " + iid + " " + time + " " + tu);
+				}
 				li = _locks.get(iid);
+				if (Constants.DEBUG_LEVEL > 1) {
+					System.out.println("InstanceLockManager - lock9 " + iid + " " + time + " " + tu);
+				}
 				if (li == null) {
+					if (Constants.DEBUG_LEVEL > 1) {
+						System.out.println("InstanceLockManager - lock10 " + iid + " " + time + " " + tu);
+					}
 					li = new InstanceInfo(iid, Thread.currentThread());
+					if (Constants.DEBUG_LEVEL > 1) {
+						System.out.println("InstanceLockManager - lock11 " + iid + " " + time + " " + tu);
+					}
 					_locks.put(iid, li);
-					if (__log.isDebugEnabled())
+					if (Constants.DEBUG_LEVEL > 1) {
+						System.out.println("InstanceLockManager - lock12 " + iid + " " + time + " " + tu);
+					}
+					if (__log.isDebugEnabled()) {
 						__log.debug(thrd + ": lock(iid=" + iid + ", time="
 								+ time + tu + ")-->GRANTED");
+						if (Constants.DEBUG_LEVEL > 1) {
+							System.out.println("InstanceLockManager - lock13 " + thrd + ": lock(iid=" + iid + ", time="
+								+ time + tu + ")-->GRANTED");
+						}
+					}
 					return;
 				} else {
-					if (__log.isDebugEnabled())
+					if (__log.isDebugEnabled()) {
 						__log.debug(thrd + ": lock(iid=" + iid + ", time="
 								+ time + tu + ")-->WAITING(held by "
 								+ li.acquierer + ")");
+						if (Constants.DEBUG_LEVEL > 1) {
+							System.out.println("InstanceLockManager - lock14 " + thrd + ": lock(iid=" + iid + ", time="
+								+ time + tu + ")-->WAITING(held by "
+								+ li.acquierer + ")");
+						}
+					}
 
 					if (!li.available.await(time, tu)) {
 						if (__log.isDebugEnabled())
 							__log.debug(thrd + ": lock(iid=" + iid + ", time="
 									+ time + tu + ")-->TIMEOUT (held by "
 									+ li.acquierer + ")");
+						if (Constants.DEBUG_LEVEL > 1) {
+							System.out.println("InstanceLockManager - lock15 " + thrd + ": lock(iid=" + iid + ", time="
+								+ time + tu + ")-->TIMEOUT (held by "
+								+ li.acquierer + ")");
+						}
 						throw new TimeoutException();
 					}
 				}
 			}
 
 		} finally {
+			if (Constants.DEBUG_LEVEL > 1) {
+				System.out.println("InstanceLockManager - lock16 " + iid + " " + time + " " + tu);
+			}
 			_mutex.unlock();
+			if (Constants.DEBUG_LEVEL > 1) {
+				System.out.println("InstanceLockManager - lock17 " + iid + " " + time + " " + tu);
+			}
 		}
 
 	}
 
 	public void unlock(Long iid) {
-		if (iid == null)
+		if (Constants.DEBUG_LEVEL > 1) {
+			System.out.println("InstanceLockManager - unlock1 " + iid);
+		}
+		if (iid == null) {
+			if (Constants.DEBUG_LEVEL > 1) {
+				System.out.println("InstanceLockManager - unlock2 " + iid);
+			}
 			return;
+		}
 
 		String thrd = Thread.currentThread().toString();
 		if (__log.isDebugEnabled())
 			__log.debug(thrd + ": unlock(iid=" + iid + ")");
-
+		if (Constants.DEBUG_LEVEL > 1) {
+			System.out.println("InstanceLockManager - unlock3 " + iid);
+		}
 		_mutex.lock();
+		if (Constants.DEBUG_LEVEL > 1) {
+			System.out.println("InstanceLockManager - unlock4 " + iid);
+		}
 		try {
+			if (Constants.DEBUG_LEVEL > 1) {
+				System.out.println("InstanceLockManager - unlock5 " + iid);
+			}
 			InstanceInfo li = _locks.get(iid);
-			if (li == null)
+			if (Constants.DEBUG_LEVEL > 1) {
+				System.out.println("InstanceLockManager - unlock6 " + iid);
+			}
+			if (li == null) {
+				if (Constants.DEBUG_LEVEL > 1) {
+					System.out.println("InstanceLockManager - unlock7 " + iid);
+				}
 				throw new IllegalStateException(
 						"Instance not locked, cannot unlock!");
-
+			}
+			if (Constants.DEBUG_LEVEL > 1) {
+				System.out.println("InstanceLockManager - unlock8 " + iid);
+			}
 			_locks.remove(iid);
-
+			if (Constants.DEBUG_LEVEL > 1) {
+				System.out.println("InstanceLockManager - unlock9 " + iid);
+			}
 			// Note, that we have to signall all threads, because new holder
 			// will create a new
 			// instance of "available" condition variable, so all the waiters
 			// need to try again
 			li.available.signalAll();
-
+			if (Constants.DEBUG_LEVEL > 1) {
+				System.out.println("InstanceLockManager - unlock10 " + iid);
+			}
 		} finally {
+			if (Constants.DEBUG_LEVEL > 1) {
+				System.out.println("InstanceLockManager - unlock11 " + iid);
+			}
 			_mutex.unlock();
+			if (Constants.DEBUG_LEVEL > 1) {
+				System.out.println("InstanceLockManager - unlock12 " + iid);
+			}
 		}
 
 	}

@@ -12,6 +12,7 @@ import org.apache.ode.bpel.extensions.handler.IncomingMessageHandler;
 import org.apache.ode.bpel.extensions.handler.InstanceEventHandler;
 import org.apache.ode.bpel.extensions.listener.StoreEventListenerImpl;
 import org.apache.ode.bpel.extensions.log.Logging;
+import org.apache.ode.bpel.extensions.sync.Constants;
 import org.apache.ode.store.ProcessStoreImpl;
 import org.apache.ode.utils.ZZBool;
 
@@ -36,7 +37,9 @@ public class GenericController {
 		// timestamp is ID of the GenericController
 		timestamp = new Long(System.currentTimeMillis());
 
-		System.out.println("Generic Controller instantiated.");
+		if (Constants.DEBUG_LEVEL > 0) {
+			System.out.println("Generic Controller instantiated.");
+		}
 	}
 
 	public static GenericController getInstance() {
@@ -62,7 +65,9 @@ public class GenericController {
 		// register StoreEventListener
 		store.registerListener(new StoreEventListenerImpl());
 
-		System.out.println("Generic Controller initialized.");
+		if (Constants.DEBUG_LEVEL > 0) {
+			System.out.println("Generic Controller initialized.");
+		}
 	}
 
 	public void shutdown() {

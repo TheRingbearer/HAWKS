@@ -301,7 +301,9 @@ public class MyRoleMessageExchangeImpl extends MessageExchangeImpl implements
 				TimeoutException {
 			ResponseCallback callback = _waitingCallbacks.get(_clientId);
 			if (callback != null) {
-				callback.waitResponse(timeout);
+				//callback.waitResponse(timeout);
+				//krawczls: changed timeout
+				callback.waitResponse(10 * 60 * 1000);
 				_done = true;
 				if (callback._timedout)
 					throw new TimeoutException("Message exchange " + this

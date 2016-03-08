@@ -71,7 +71,7 @@ import org.apache.ode.bpel.extension.ExtensionBundleValidation;
 import org.apache.ode.bpel.extension.ExtensionValidator;
 import org.apache.ode.bpel.extensions.GenericController;
 import org.apache.ode.bpel.extensions.handler.IncomingMessageHandler;
-import org.apache.ode.bpel.extensions.sync.SynchronizationMiddleware;
+import org.apache.ode.bpel.extensions.sync.SynchronizationUnit;
 import org.apache.ode.bpel.extvar.jdbc.JdbcExternalVariableModule;
 import org.apache.ode.bpel.iapi.BpelEventListener;
 import org.apache.ode.bpel.iapi.EndpointReferenceContext;
@@ -143,7 +143,7 @@ public class ODEServer {
 	public Runnable txMgrCreatedCallback;
 	
 	// @krawczls: SynchronizationMiddleware instance
-	protected SynchronizationMiddleware _synchronization;
+	protected SynchronizationUnit _synchronization;
 	
 	//********dffgfhgfhgjhhggggggghhhhhhhhhhhhhhhhhhhhhhggggggggg
 	
@@ -314,7 +314,7 @@ public class ODEServer {
 		String key = _odeConfig.getSyncKey();
 		String myIp = _odeConfig.getMyIp();
 		String middlewareIp = _odeConfig.getMiddlewareIp();
-		_synchronization = new SynchronizationMiddleware();
+		_synchronization = new SynchronizationUnit();
 		_synchronization.init(key, myIp, middlewareIp);
 		
 	}

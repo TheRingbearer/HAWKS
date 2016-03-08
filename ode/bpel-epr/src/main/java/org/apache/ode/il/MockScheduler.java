@@ -340,28 +340,35 @@ public class MockScheduler implements Scheduler {
 	}
 
 	private void doExecute(JobInfo ji) {
+		System.out.println("MockScheduler - doExecute.1" + ji.jobDetail.instanceId);
 		JobProcessor processor = _processor;
 
 		// @stmz: can we execute the job?
 		final Boolean bool = (Boolean) ji.jobDetail.detailsExt.get("bool");
-
+		System.out.println("MockScheduler - doExecute.2" + ji.jobDetail.instanceId);
 		if (!bool) {
+			System.out.println("MockScheduler - doExecute.3" + ji.jobDetail.instanceId);
 			ji.jobDetail.detailsExt.put("bool", true);
 			jobList.addJobInfo(ji);
 			return;
 		}
 
-		if (processor == null)
+		if (processor == null) {
+			System.out.println("MockScheduler - doExecute.4" + ji.jobDetail.instanceId);
 			throw new RuntimeException("No processor.");
+		}
 		try {
+			System.out.println("MockScheduler - doExecute.5" + ji.jobDetail.instanceId);
 			processor.onScheduledJob(ji);
 		} catch (Exception jpe) {
+			System.out.println("MockScheduler - doExecute.6" + ji.jobDetail.instanceId);
 			throw new RuntimeException(
 					"Scheduled transaction failed unexpectedly: transaction will not be retried!.",
 					jpe);
 		}
 		// @stmz: job was executed. next one can be executed.
 		if (bool) {
+			System.out.println("MockScheduler - doExecute.7" + ji.jobDetail.instanceId);
 			zzbool.setCanRun(true);
 		}
 	}

@@ -394,9 +394,9 @@ public class INVOKE extends ACTIVITY {
 								CompensationHandler.emptySet());
 					}
 					
-					//krwczk: TODO -implement skip
 					public void skip() {
-						
+						_self.parent.completed(null,
+								CompensationHandler.emptySet());
 					}
 				}));
 

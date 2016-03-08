@@ -95,6 +95,7 @@ import org.apache.ode.bpel.extensions.processes.Compensation_Handler;
 import org.apache.ode.bpel.extensions.processes.Deployed_Process;
 import org.apache.ode.bpel.extensions.processes.Running_Activity;
 import org.apache.ode.bpel.extensions.processes.Running_Scope;
+import org.apache.ode.bpel.extensions.sync.Constants;
 import org.apache.ode.bpel.iapi.ContextException;
 import org.apache.ode.bpel.iapi.Scheduler;
 import org.apache.ode.bpel.iapi.Scheduler.JobDetails;
@@ -158,8 +159,9 @@ public class IncomingMessageHandler {
 		// a runnable. this runnable is fetched in method execute() in
 		// BpelRuntimeContextImpl
 		runnables = Collections.synchronizedList(new LinkedList<Runnable>());
-
-		System.out.println("IncomingMessageHandler instantiated.");
+		if (Constants.DEBUG_LEVEL > 0) {
+			System.out.println("IncomingMessageHandler instantiated.");
+		}
 	}
 
 	public static IncomingMessageHandler getInstance() {
@@ -170,22 +172,45 @@ public class IncomingMessageHandler {
 	}
 
 	public void timerEvent(Long ID, QName procName) {
+		if (Constants.DEBUG_LEVEL > 0) {
+			System.out.println("IncomingMessageHandler - Setting InstanceID to " + ID);
+		}
 		JobDetails we = new JobDetails();
 		we.setInstanceId(ID);
 		we.setType(JobType.TIMER2);
+		if (Constants.DEBUG_LEVEL > 0) {
+			System.out.println("IncomingMessageHandler - ID1: " + ID);
+		}
 		synchronized (block.getProcesses()) {
+			if (Constants.DEBUG_LEVEL > 0) {
+				System.out.println("IncomingMessageHandler - ID2: " + ID);
+			}
 			we.setInMem(block.getProcesses().get(procName));
+			if (Constants.DEBUG_LEVEL > 0) {
+				System.out.println("IncomingMessageHandler - ID3: " + ID);
+			}
 		}
 
 		final JobDetails we2 = we;
 		try {
+			if (Constants.DEBUG_LEVEL > 0) {
+				System.out.println("IncomingMessageHandler - ID4: " + ID);
+			}
 			scheduler.execTransaction(new Callable<Void>() {
 				public Void call() throws Exception {
 
 					scheduler.schedulePersistedJob(we2, null);
+					if (Constants.DEBUG_LEVEL > 0) {
+						System.out.println("IncomingMessageHandler - ID7: ");
+					}
 					return null;
 				}
 			});
+			if (Constants.DEBUG_LEVEL > 0) {
+				if (Constants.DEBUG_LEVEL > 0) {
+					System.out.println("IncomingMessageHandler - ID6: " + ID);
+				}
+			}
 		} catch (ContextException e) {
 			System.out.println(e);
 		} catch (Exception e) {
@@ -217,6 +242,9 @@ public class IncomingMessageHandler {
 			}
 			if (tmp2 != null) {
 				runnables.remove(tmp2);
+				if (Constants.DEBUG_LEVEL > 0) {
+					System.out.println("IncomingMessageHandler - Found runnable for process " + tmp2.processID);
+				}
 				temp = tmp2.runnable;
 			}
 		}
@@ -246,26 +274,36 @@ public class IncomingMessageHandler {
 	// Incoming Event Complete_Activity
 	public void Complete_Activity(Complete_Activity incEvent) {
 		BlockingEvent tmp = getEvent(incEvent.getReplyToMsgID());
-
+		if (Constants.DEBUG_LEVEL > 0) {
+			System.out.println("IncomingMessageHandler - Searching for blocked event " + incEvent.getReplyToMsgID());
+		}
 		if (tmp != null) {
 			if (tmp.getBpelEvent() instanceof ActivityReady) {
 				final ActivityReady event = (ActivityReady) tmp.getBpelEvent();
-
+				if (Constants.DEBUG_LEVEL > 0) {
+					System.out.println("IncomingMessageHandler - Before run. " + incEvent.getReplyToMsgID());
+				}
 				JacobRunnable runnable = new JacobRunnable() {
 					private static final long serialVersionUID = 32431036745L;
-
+					
+					
+					
 					public void run() {
+						if (Constants.DEBUG_LEVEL > 0) {
+							System.out.println("IncomingMessageHandler - In run. " + event.getProcess_ID());
+						}
 						LinkStatusChannel chan = importChannel(
 								event.getLink_name(), LinkStatusChannel.class);
 						chan.linkStatus(false);
 					}
 
 				};
-
+				if (Constants.DEBUG_LEVEL > 0) {
+					System.out.println("IncomingMessageHandler - After run. " + incEvent.getReplyToMsgID());
+				}
 				// @hahnml: Reference the runnable with the activity it belongs
 				// to
 				runnable.setOId(event.getOBaseId());
-
 				QName name = instanceEventHandler.getQName(event
 						.getProcess_ID());
 				if (name != null) {
@@ -358,17 +396,21 @@ public class IncomingMessageHandler {
 			}
 
 			else {
-				System.out.println("");
-				System.out
-						.println("Incoming Message made no sense. Possibly deadlocked now.");
-				System.out.println("");
+				if (Constants.DEBUG_LEVEL > 0) {
+					System.out.println("");
+					System.out
+							.println("Incoming Message made no sense. Possibly deadlocked now.");
+					System.out.println("");
+				}
 				unblock(tmp.getBpelEvent());
 			}
 		} else {
-			System.out.println("");
-			System.out
-					.println("No blocking Message found. Possibly deadlocked now.");
-			System.out.println("");
+			if (Constants.DEBUG_LEVEL > 0) {
+				System.out.println("");
+				System.out
+						.println("No blocking Message found. Possibly deadlocked now.");
+				System.out.println("");
+			}
 		}
 
 	}
@@ -493,17 +535,21 @@ public class IncomingMessageHandler {
 			}
 
 			else {
-				System.out.println("");
-				System.out
-						.println("Incoming Message made no sense. Possibly deadlocked now.");
-				System.out.println("");
+				if (Constants.DEBUG_LEVEL > 0) {
+					System.out.println("");
+					System.out
+							.println("Incoming Message made no sense. Possibly deadlocked now.");
+					System.out.println("");
+				}
 				unblock(tmp.getBpelEvent());
 			}
 		} else {
-			System.out.println("");
-			System.out
-					.println("No blocking Message found. Possibly deadlocked now.");
-			System.out.println("");
+			if (Constants.DEBUG_LEVEL > 0) {
+				System.out.println("");
+				System.out
+						.println("No blocking Message found. Possibly deadlocked now.");
+				System.out.println("");
+			}
 		}
 
 	}
@@ -541,17 +587,21 @@ public class IncomingMessageHandler {
 			}
 
 			else {
-				System.out.println("");
-				System.out
-						.println("Incoming Message made no sense. Possibly deadlocked now.");
-				System.out.println("");
+				if (Constants.DEBUG_LEVEL > 0) {
+					System.out.println("");
+					System.out
+							.println("Incoming Message made no sense. Possibly deadlocked now.");
+					System.out.println("");
+				}
 				unblock(tmp.getBpelEvent());
 			}
 		} else {
-			System.out.println("");
-			System.out
-					.println("No blocking Message found. Possibly deadlocked now.");
-			System.out.println("");
+			if (Constants.DEBUG_LEVEL > 0) {
+				System.out.println("");
+				System.out
+						.println("No blocking Message found. Possibly deadlocked now.");
+				System.out.println("");
+			}
 		}
 	}
 
@@ -777,17 +827,21 @@ public class IncomingMessageHandler {
 			}
 
 			else {
-				System.out.println("");
-				System.out
-						.println("Incoming Message made no sense. Possibly deadlocked now.");
-				System.out.println("");
+				if (Constants.DEBUG_LEVEL > 0) {
+					System.out.println("");
+					System.out
+							.println("Incoming Message made no sense. Possibly deadlocked now.");
+					System.out.println("");
+				}
 				unblock(tmp.getBpelEvent());
 			}
 		} else {
-			System.out.println("");
-			System.out
-					.println("No blocking Message found. Possibly deadlocked now.");
-			System.out.println("");
+			if (Constants.DEBUG_LEVEL > 0) {
+				System.out.println("");
+				System.out
+						.println("No blocking Message found. Possibly deadlocked now.");
+				System.out.println("");
+			}
 		}
 	}
 
@@ -851,17 +905,21 @@ public class IncomingMessageHandler {
 			}
 
 			else {
-				System.out.println("");
-				System.out
-						.println("Incoming Message made no sense. Possibly deadlocked now.");
-				System.out.println("");
+				if (Constants.DEBUG_LEVEL > 0) {
+					System.out.println("");
+					System.out
+							.println("Incoming Message made no sense. Possibly deadlocked now.");
+					System.out.println("");
+				}
 				unblock(tmp.getBpelEvent());
 			}
 		} else {
-			System.out.println("");
-			System.out
-					.println("No blocking Message found. Possibly deadlocked now.");
-			System.out.println("");
+			if (Constants.DEBUG_LEVEL > 0) {
+				System.out.println("");
+				System.out
+						.println("No blocking Message found. Possibly deadlocked now.");
+				System.out.println("");
+			}
 		}
 	}
 
@@ -932,24 +990,30 @@ public class IncomingMessageHandler {
 					timerEvent(event.getProcess_ID(), name);
 				}
 			} else {
-				System.out.println("");
-				System.out
-						.println("Incoming Message made no sense. Possibly deadlocked now.");
-				System.out.println("");
+				if (Constants.DEBUG_LEVEL > 0) {
+					System.out.println("");
+					System.out
+							.println("Incoming Message made no sense. Possibly deadlocked now.");
+					System.out.println("");
+				}
 				unblock(tmp.getBpelEvent());
 			}
 		} else {
-			System.out.println("");
-			System.out
-					.println("No blocking Message found. Possibly deadlocked now.");
-			System.out.println("");
+			if (Constants.DEBUG_LEVEL > 0) {
+				System.out.println("");
+				System.out
+						.println("No blocking Message found. Possibly deadlocked now.");
+				System.out.println("");
+			}
 		}
 	}
 	
 	//@krawczls: Incoming Event Skip_Activity
 	public void Skip_Activity(Skip_Activity incEvent) {
 		BlockingEvent tmp = getEvent(incEvent.getReplyToMsgID());
-
+		if (Constants.DEBUG_LEVEL > 0) {
+			System.out.println("ODE - skip message replies to message with id " + incEvent.getReplyToMsgID());
+		}
 		if (tmp != null) {
 			if (tmp.getBpelEvent() instanceof ActivityReady) {
 				final ActivityReady event = (ActivityReady) tmp.getBpelEvent();
@@ -962,6 +1026,9 @@ public class IncomingMessageHandler {
 						termChan.skip();
 					}
 				};
+				if (Constants.DEBUG_LEVEL > 0) {
+					System.out.println("ODE - preparing to skip activity.");
+				}
 				runnable.setOId(event.getOBaseId());
 
 				QName name = instanceEventHandler.getQName(event
@@ -984,6 +1051,9 @@ public class IncomingMessageHandler {
 						termChan.skip();
 					}
 				};
+				if (Constants.DEBUG_LEVEL > 0) {
+					System.out.println("ODE - preparing to skip scope activity.");
+				}
 				runnable.setOId(event.getOBaseId());
 
 				QName name = instanceEventHandler.getQName(event
@@ -994,15 +1064,19 @@ public class IncomingMessageHandler {
 				}
 			}
 			else {
-				System.out.println("");
-				System.out.println("Incoming Message made no sense. Possibly deadlocked now.");
-				System.out.println("");
+				if (Constants.DEBUG_LEVEL > 0) {
+					System.out.println("");
+					System.out.println("Incoming Message made no sense. Possibly deadlocked now.");
+					System.out.println("");
+				}
 				unblock(tmp.getBpelEvent());
 			}
 		} else {
-			System.out.println("");
-			System.out.println("No blocking Message found. Possibly deadlocked now.");
-			System.out.println("");
+			if (Constants.DEBUG_LEVEL > 0) {
+				System.out.println("");
+				System.out.println("No blocking Message found. Possibly deadlocked now.");
+				System.out.println("");
+			}
 		}
 	}
 	
@@ -1011,9 +1085,11 @@ public class IncomingMessageHandler {
 		BlockingEvent tmp = getEvent(incEvent.getReplyToMsgID());
 		if (tmp != null) {
 			if (tmp.getBpelEvent() instanceof ActivityReady) {
-
+				
 				final ActivityReady event = (ActivityReady) tmp.getBpelEvent();
-
+				if (Constants.DEBUG_LEVEL > 0) {
+					System.out.println("IncomingMessageHandler - Received start for " + event.getActivity_name() + " in process " + event.getProcess_ID());
+				}
 				JacobRunnable runnable = new JacobRunnable() {
 					private static final long serialVersionUID = 787611036745L;
 
@@ -1063,17 +1139,21 @@ public class IncomingMessageHandler {
 				}
 
 			} else {
-				System.out.println("");
-				System.out
-						.println("Incoming Message made no sense. Possibly deadlocked now.");
-				System.out.println("");
+				if (Constants.DEBUG_LEVEL > 0) {
+					System.out.println("");
+					System.out
+							.println("Incoming Message made no sense. Possibly deadlocked now.");
+					System.out.println("");
+				}
 				unblock(tmp.getBpelEvent());
 			}
 		} else {
-			System.out.println("");
-			System.out
-					.println("No blocking Message found. Possibly deadlocked now.");
-			System.out.println("");
+			if (Constants.DEBUG_LEVEL > 0) {
+				System.out.println("");
+				System.out
+						.println("No blocking Message found. Possibly deadlocked now.");
+				System.out.println("");
+			}
 		}
 	}
 
@@ -1192,17 +1272,21 @@ public class IncomingMessageHandler {
 			}
 
 			else {
-				System.out.println("");
-				System.out
-						.println("Incoming Message made no sense. Possibly deadlocked now.");
-				System.out.println("");
+				if (Constants.DEBUG_LEVEL > 0) {
+					System.out.println("");
+					System.out
+							.println("Incoming Message made no sense. Possibly deadlocked now.");
+					System.out.println("");
+				}
 				unblock(tmp.getBpelEvent());
 			}
 		} else {
-			System.out.println("");
-			System.out
-					.println("No blocking Message found. Possibly deadlocked now.");
-			System.out.println("");
+			if (Constants.DEBUG_LEVEL > 0) {
+				System.out.println("");
+				System.out
+						.println("No blocking Message found. Possibly deadlocked now.");
+				System.out.println("");
+			}
 		}
 	}
 
@@ -1583,10 +1667,12 @@ public class IncomingMessageHandler {
 
 									}
 								} catch (Exception e) {
-									System.out.println("");
-									System.out
-											.println("Failed to write Variable.");
-									System.out.println("");
+									if (Constants.DEBUG_LEVEL > 0) {
+										System.out.println("");
+										System.out
+												.println("Failed to write Variable.");
+										System.out.println("");
+									}
 								}
 							}
 
@@ -1644,9 +1730,11 @@ public class IncomingMessageHandler {
 
 								}
 							} catch (Exception e) {
-								System.out.println("");
-								System.out.println("Failed to write Variable.");
-								System.out.println("");
+								if (Constants.DEBUG_LEVEL > 0) {
+									System.out.println("");
+									System.out.println("Failed to write Variable.");
+									System.out.println("");
+								}
 							}
 						}
 					}
@@ -1736,9 +1824,11 @@ public class IncomingMessageHandler {
 										incEvent.getProcessID(), epr);
 
 					} catch (Exception e) {
-						System.out.println("");
-						System.out.println("Failed to write PartnerLink.");
-						System.out.println("");
+						if (Constants.DEBUG_LEVEL > 0) {
+							System.out.println("");
+							System.out.println("Failed to write PartnerLink.");
+							System.out.println("");
+						}
 					}
 				}
 			}
@@ -1791,9 +1881,11 @@ public class IncomingMessageHandler {
 								true, null);
 
 					} catch (Exception e) {
-						System.out.println("");
-						System.out.println("Failed to write CorrelationSet.");
-						System.out.println("");
+						if (Constants.DEBUG_LEVEL > 0) {
+							System.out.println("");
+							System.out.println("Failed to write CorrelationSet.");
+							System.out.println("");
+						}
 					}
 				}
 			}

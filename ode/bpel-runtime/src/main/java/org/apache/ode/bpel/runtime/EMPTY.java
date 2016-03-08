@@ -83,7 +83,7 @@ class EMPTY extends ACTIVITY {
 				_self.parent.completed(null, CompensationHandler.emptySet());
 			}
 			
-			//krwczk: TODO -implement skip
+			//krawczls:
 			public void skip() {
 				//Event Activity_Skipped
 				ActivitySkipped evt = new ActivitySkipped(_self.o.name, _self.o.getId(),
@@ -161,7 +161,7 @@ class EMPTY extends ACTIVITY {
 				_self.parent.completed(null, CompensationHandler.emptySet());
 			}
 			
-			//krwczk: TODO -implement skip
+			//krawczls:
 			public void skip() {
 				//Event Activity_Skipped
 				ActivitySkipped evt = new ActivitySkipped(_self.o.name, _self.o.getId(),

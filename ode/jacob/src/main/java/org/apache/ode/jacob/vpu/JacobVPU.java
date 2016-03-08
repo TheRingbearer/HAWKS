@@ -156,6 +156,7 @@ public final class JacobVPU {
 		try {
 			jt.run();
 		} catch (RuntimeException re) {
+			System.out.println("JacobVPU - Error Executing");
 			_fault = re;
 			throw re;
 		}

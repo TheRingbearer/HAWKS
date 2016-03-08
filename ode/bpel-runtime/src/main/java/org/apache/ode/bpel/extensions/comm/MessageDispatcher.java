@@ -30,6 +30,7 @@ import org.apache.ode.bpel.extensions.comm.messages.engineIn.Write_CorrelationSe
 import org.apache.ode.bpel.extensions.comm.messages.engineIn.Write_PartnerLink;
 import org.apache.ode.bpel.extensions.comm.messages.engineIn.Write_Variable;
 import org.apache.ode.bpel.extensions.handler.IncomingMessageHandler;
+import org.apache.ode.bpel.extensions.sync.Constants;
 
 //@stmz: receives incoming messages
 public class MessageDispatcher implements MessageListener {
@@ -114,15 +115,13 @@ public class MessageDispatcher implements MessageListener {
 				Write_CorrelationSet tmp = (Write_CorrelationSet) aObject;
 
 			} else {
-				System.out.println("");
-				System.out.println("Incoming Message is unknown.");
-				System.out.println("");
+				if (Constants.DEBUG_LEVEL > 0) {
+					System.out.println("\nIncoming Message is unknown.\n");
+				}
 			}
 
 		} catch (JMSException e) {
-			System.out.println("");
-			System.out.println("Unable to handle an incoming Message.");
-			System.out.println("");
+			System.out.println("\nUnable to handle an incoming Message.\n");
 			e.printStackTrace();
 		}
 

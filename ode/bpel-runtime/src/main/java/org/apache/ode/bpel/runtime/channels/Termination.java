@@ -20,8 +20,6 @@ package org.apache.ode.bpel.runtime.channels;
 
 import org.apache.ode.jacob.ap.ChannelType;
 
-//krwczk: TODO -own channel for skip?
-
 /**
  * Channel used for parent-to-child scope communication.
  */
@@ -33,6 +31,7 @@ public interface Termination {
 	 */
 	void terminate();
 	
+	//krawczls:
 	void skip();
 
 }
