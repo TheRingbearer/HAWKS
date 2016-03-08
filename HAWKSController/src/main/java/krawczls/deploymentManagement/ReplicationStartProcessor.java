@@ -33,7 +33,9 @@ public class ReplicationStartProcessor
 implements Processor {
     WorkflowEngineRegistry registry = new WorkflowEngineRegistry();
     ReplicationDeploymentManager deployer = new ReplicationDeploymentManager();
-
+    
+    Random randomMaster = new Random();
+    
     private String generateReplicatedWorkflowUniqueID() {
     	Random rand = new Random();
     	int randInt = rand.nextInt();
@@ -99,7 +101,8 @@ implements Processor {
 		        	}
 	        	}
 	        	else {
-		        	for(int i = actualEngines.size(); i > 1; i--) {
+	        		Random randomGenerator = new Random();
+		        	/*for(int i = actualEngines.size(); i > 1; i--) {
 		        		for(int j = 0; j < i - 1; j++) {
 		        			if(actualEngines.get(j).numberOfActiveProcesses() > actualEngines.get(j+1).numberOfActiveProcesses()) {
 		        				WorkflowEngine bufferEngine = actualEngines.get(j);
@@ -109,8 +112,32 @@ implements Processor {
 		        				actualEnginesIPs.set(j, actualEnginesIPs.get(j+1));
 		        				actualEnginesIPs.set(j+1, bufferIP);
 		        			}
+		        			else if(actualEngines.get(j).numberOfActiveProcesses() == actualEngines.get(j+1).numberOfActiveProcesses()) {
+		        				int randomInt = randomGenerator.nextInt(1);
+		        				if(randomInt == 1) {
+			        				WorkflowEngine bufferEngine = actualEngines.get(j);
+			        				actualEngines.set(j, actualEngines.get(j+1));
+			        				actualEngines.set(j+1, bufferEngine);
+			        				String bufferIP = actualEnginesIPs.get(j);
+			        				actualEnginesIPs.set(j, actualEnginesIPs.get(j+1));
+			        				actualEnginesIPs.set(j+1, bufferIP);
+		        				}
+		        			}
 		        		}
-		        	}
+		        	}*/
+	    	        ArrayList<WorkflowEngine> actualEnginesBuffer = actualEngines;
+	    	        ArrayList<String> actualEnginesIPsBuffer = actualEnginesIPs;
+	    	        actualEngines = new ArrayList<WorkflowEngine>();
+	    	        actualEnginesIPs = new ArrayList<String>();
+	    	        int firstEngine = ReplicationStartContext.randomGenerator.nextInt(actualEnginesBuffer.size());
+	        		for(int i = 0; i < replicationDegree; i++) {
+	        			if(firstEngine >= actualEnginesBuffer.size()) {
+	        				firstEngine = 0;
+	        			}
+	        			actualEngines.add(actualEnginesBuffer.get(firstEngine));
+	        			actualEnginesIPs.add(actualEnginesIPsBuffer.get(firstEngine));
+	        			firstEngine++;
+	        		}
 	        	}
 	        }
 	        System.out.println(replicationDegree);
@@ -145,6 +172,7 @@ implements Processor {
     		ProcessStartMessage message, 
     		ArrayList<WorkflowEngine> engines, 
     		ArrayList<String> actualEnginesIPs) throws JMSException {
+    	int master = randomMaster.nextInt(replicationDegree);
     	for(int j = 0; j < replicationDegree; j++) {
         	this.registry.addNewActiveProcessInstanceRoleAndFinish(actualEnginesIPs.get(j), replicatedWorkflowID, j + 1, false);
         	ReplicationStartContext.connection.start();
@@ -170,32 +198,38 @@ implements Processor {
                 }        	
             }
             else {
-	            if(ReplicationStartContext.master >= replicationDegree) {
+	            if (j == master) {
+	                listMessage.add("true");
+	            } else {
+	                listMessage.add("false");
+	            }
+            	
+	            /*if(ReplicationStartContext.master >= replicationDegree) {
 	            	ReplicationStartContext.master = 0;
 	            }
 	            if (j == ReplicationStartContext.master) {
 	                listMessage.add("true");
 	            } else {
 	                listMessage.add("false");
-	            }
+	            }*/
             }
             //add the heartbeat rate of the master to the list
             listMessage.add(ReplicationStartContext.heartbeatRate);
             //add the timeout for the engines to the list
-            /*if(ReplicationStartContext.withFailure) {
-                if(replicationDegree == 9) {
+            if(ReplicationStartContext.withFailure) {
+                /*if(replicationDegree == 9) {
                 	listMessage.add(ReplicationStartContext.timeout * 2);
-                }
-                else if(replicationDegree == 17) {
-                	listMessage.add(ReplicationStartContext.timeout * 4);
+                }*/
+                if(replicationDegree == 17) {
+                	listMessage.add(ReplicationStartContext.timeout * 2);
                 }
                 else {
                 	listMessage.add(ReplicationStartContext.timeout);
                 }
             }
-            else {*/
+            else {
             	listMessage.add(ReplicationStartContext.timeout);
-            //}
+            }
             //TODO krawczls check if this works
             //adding the start message
             //listMessage.add(message.getMessage());
@@ -229,9 +263,6 @@ implements Processor {
     		ArrayList<WorkflowEngine> engines, 
     		int replicationDegree, 
     		ArrayList<String> actualEnginesIPs) throws Exception {
-    	for(int j = 0; j < replicationDegree; j++) {
-            this.deployer.sendSOAPToService(message.getMessage(), message.getProcessServiceName(), actualEnginesIPs.get(j));
-        }   
         if(replicationDegree == engines.size() && replicationDegree != 17) {
         	ReplicationStartContext.writeToLogFile("middleware" + "|" + replicatedWorkflowID + "|" + replicationDegree + "|--M |" + "instance_started" + "|-|" + (new Date()).getTime() + "|" + true);
         	ReplicationStartContext.writeToLogFile("middleware" + "|" + replicatedWorkflowID + "|" + replicationDegree + "|--M |" + "activity_ready" + "|-|" + (new Date()).getTime() + "|" + true);
@@ -240,6 +271,9 @@ implements Processor {
         	ReplicationStartContext.writeToLogFile("middleware" + "|" + replicatedWorkflowID + "|" + replicationDegree + "|--M |" + "instance_started" + "|-|" + (new Date()).getTime() + "|" + false);
         	ReplicationStartContext.writeToLogFile("middleware" + "|" + replicatedWorkflowID + "|" + replicationDegree + "|--M |" + "activity_ready" + "|-|" + (new Date()).getTime() + "|" + false);
         }
+    	for(int j = 0; j < replicationDegree; j++) {
+            this.deployer.sendSOAPToService(message.getMessage(), message.getProcessServiceName(), actualEnginesIPs.get(j));
+        }   
 	}
 
 	/**
