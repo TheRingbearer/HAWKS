@@ -1,11 +1,9 @@
 # HAWKS
 HAWKS: A System for Highly Available Workflow Executions
 
-Contact: 
+HAWKS ensures high availability of workflow executions by using replication, while ensuring that the outcome is the same as in a non-replicated execution of this workflow. The implemention builds on the open-source workflow execution engine Apache ODE. 
 
-David Richard Schäfer, david.schaefer@ipvs.uni-stuttgart.de
 
-Lukas Krawczyk, lukaskrawc@googlemail.com
 
 The HAWKS system
 
@@ -20,3 +18,11 @@ Example files
 Processes: Exemplary processes
 
 Producer and Deployer: Example files for showing how to deploy workflow models and trigger workflow executions using HAWKS
+
+
+
+Contact: 
+
+David Richard Schäfer, david.schaefer@ipvs.uni-stuttgart.de
+
+Lukas Krawczyk, lukaskrawc@googlemail.com
