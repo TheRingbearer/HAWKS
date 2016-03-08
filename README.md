@@ -18,11 +18,3 @@ Example files
 Processes: Exemplary processes
 
 Producer and Deployer: Example files for showing how to deploy workflow models and trigger workflow executions using HAWKS
-
-
-
-Contact: 
-
-David Richard Schäfer, david.schaefer@ipvs.uni-stuttgart.de
-
-Lukas Krawczyk, lukaskrawc@googlemail.com
